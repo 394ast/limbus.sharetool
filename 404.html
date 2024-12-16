@@ -186,7 +186,7 @@
         const id = statusDiv.getAttribute("data-id");
         let currentState = parseInt(img.alt, 10) || 0; // alt属性から現在の状態を取得
         currentState = (currentState + 1) % (maxState + 1); // 状態を循環
-        img.src = `${baseImageUrl}imgState${currentState}/limbus${i}.${currentState}.jpg`;
+        img.src = `${baseImageUrl}imgState${currentState}/limbus${id}.${currentState}.jpg`;
         img.alt = currentState; // 新しい状態をalt属性に設定
 
         updateUrl(); // URLを更新
