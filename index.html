@@ -199,7 +199,7 @@
         .map(div => div.querySelector(".status-img").alt);
 
         const compressedData = compressData(states);
-        const encodedData = btoa(compressedData); // Base64エンコード
+        const encodedData = toUrlSafeBase64(compressedData); // URLsafeBase64エンコード
         const baseUrl = "https://394ast.github.io/limbus.sharetool";
   
         // パス形式に変更
@@ -259,7 +259,7 @@
 
     // 解凍処理
     function decompressData(encodedData) {
-      const decodedData = atob(encodedData); // Base64デコード
+      const decodedData = fromUrlSafeBase64(encodedData); // URLsafeBase64デコード
       const groups = decodedData.split('-');
       const decompressedStates = [];
 
@@ -376,6 +376,24 @@
 
     // ページのリサイズ時にも調整
     window.addEventListener('resize', adjustTextareaHeight);
+
+    // URLセーフBase64エンコード関数
+    function toUrlSafeBase64(data) {
+      return btoa(data)
+      .replace(/\+/g, '-')
+      .replace(/\//g, '_')
+      .replace(/=+$/, ''); // 末尾の = を削除
+    }
+
+    // URLセーフBase64デコード関数
+    function fromUrlSafeBase64(data) {
+      data = data.replace(/-/g, '+').replace(/_/g, '/');
+      // パディングが不足している場合は補完
+      while (data.length % 4) {
+      data += '=';
+      }
+    return atob(data);
+    }
 
   });
   </script>
