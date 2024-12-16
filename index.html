@@ -171,7 +171,10 @@
     // 状態復元処理
      const pathParts = window.location.pathname.replace(/\/$/, '').split('/'); // 最後のスラッシュを削除してから分割
      const statesParam = pathParts[pathParts.length - 1]; // 最後の部分を取得
-
+    // statesParamが'limbus.sharetool'の場合は空文字列にする
+     if (statesParam === 'limbus.sharetool') {
+     statesParam = '';
+     }
      if (statesParam) {
      const { result: decompressedStates } = decompressData(statesParam); // 解凍処理
      restoreState(decompressedStates);
