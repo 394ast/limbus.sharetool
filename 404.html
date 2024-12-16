@@ -112,6 +112,7 @@
   <div class="checklist-container" data-group="24"></div>
 
   <p>共有用URL: <textarea id="shareUrl" readonly></textarea></p>
+  <button id="copyButton">共有用URLをコピー</button>
 
   <script>
   document.addEventListener("DOMContentLoaded", () => {
@@ -394,6 +395,19 @@
       }
     return atob(data);
     }
+    
+    // コピーボタンをクリックしたときの処理
+    document.getElementById('copyButton').addEventListener('click', async function () {
+      const textarea = document.getElementById('shareUrl');
+      const url = textarea.value; // テキストエリアの内容を取得
+      try {
+      // Clipboard APIを使用してクリップボードにコピー
+      await navigator.clipboard.writeText(url);
+      alert('共有用URLをコピーしました');
+      } catch (err) {
+      alert('コピーに失敗しました。');
+      }
+    });
 
   });
   </script>
