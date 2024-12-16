@@ -115,7 +115,7 @@
 
   <script>
   document.addEventListener("DOMContentLoaded", () => {
-    const baseImageUrl = "https://via.placeholder.com/700.jpeg";
+    const baseImageUrl = "https://via.placeholder.com/100.jpeg";
     const defaultState = 4; // 初期状態
     const maxState = 4; // 状態の最大値
     const groupSettings = {
@@ -168,12 +168,13 @@
     const shareUrl = document.getElementById("shareUrl");
 
     // 状態復元処理
-    const urlParams = new URLSearchParams(window.location.search);
-    const statesParam = urlParams.get("states");
-    if (statesParam) {
-      const { result: decompressedStates } = decompressData(statesParam); // 解凍処理
-      restoreState(decompressedStates);
-    }
+     const pathParts = window.location.pathname.split('/'); // パス部分をスラッシュで分割
+     const statesParam = pathParts[pathParts.length - 1]; // 最後の部分を取得
+
+     if (statesParam) {
+     const { result: decompressedStates } = decompressData(statesParam); // 解凍処理
+     restoreState(decompressedStates);
+     }
     
     // ページが読み込まれたときにもURLを更新
       updateUrl();
@@ -192,18 +193,21 @@
       });
     });
 
-    // URL更新関数
+    //URL更新関数
     function updateUrl() {
-      const states = Array.from(document.querySelectorAll(".status"))
+        const states = Array.from(document.querySelectorAll(".status"))
         .map(div => div.querySelector(".status-img").alt);
 
-      const compressedData = compressData(states);
-      const encodedData = btoa(compressedData); // Base64エンコード
-      const baseUrl = "https://394ast.github.io/limbus.sharetool/";
-      shareUrl.value = `${baseUrl}?states=${encodedData}`;
+        const compressedData = compressData(states);
+        const encodedData = btoa(compressedData); // Base64エンコード
+        const baseUrl = "https://394ast.github.io/limbus.sharetool";
+  
+        // パス形式に変更
+        shareUrl.value = `${baseUrl}/states/${encodedData}`;
 
-      adjustTextareaHeight(); // テキストエリアの高さを更新
+        adjustTextareaHeight(); // テキストエリアの高さを更新
     }
+
 
      // 圧縮関数（ランレングス圧縮）
     function runLengthEncode(data) {
