@@ -170,7 +170,6 @@
 
     // 状態復元処理
      const pathParts = window.location.pathname.replace(/\/$/, '').split('/'); // 最後のスラッシュを削除してから分割
-     const pathParts = window.location.pathname.split('/'); // パス部分をスラッシュで分割
      const statesParam = pathParts[pathParts.length - 1]; // 最後の部分を取得
 
      if (statesParam) {
