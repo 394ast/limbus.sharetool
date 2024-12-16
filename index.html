@@ -115,7 +115,7 @@
 
   <script>
   document.addEventListener("DOMContentLoaded", () => {
-    const baseImageUrl = "https://via.placeholder.com/700?text=";
+    const baseImageUrl = "https://via.placeholder.com/700.jpeg";
     const defaultState = 4; // 初期状態
     const maxState = 4; // 状態の最大値
     const groupSettings = {
@@ -156,7 +156,7 @@
         statusDiv.setAttribute("data-id", i);
 
         const img = document.createElement("img");
-        img.src = `${baseImageUrl}limbus${i}.${defaultState}.png`;
+        img.src = `${baseImageUrl}?text=${defaultState}`;
         img.alt = defaultState;
         img.className = "status-img";
 
@@ -185,7 +185,7 @@
         const id = statusDiv.getAttribute("data-id");
         let currentState = parseInt(img.alt, 10) || 0; // alt属性から現在の状態を取得
         currentState = (currentState + 1) % (maxState + 1); // 状態を循環
-        img.src = `${baseImageUrl}limbus${id}.${currentState}.png`;
+        img.src = `${baseImageUrl}?text=${currentState}`;
         img.alt = currentState; // 新しい状態をalt属性に設定
 
         updateUrl(); // URLを更新
@@ -199,7 +199,7 @@
 
       const compressedData = compressData(states);
       const encodedData = btoa(compressedData); // Base64エンコード
-      const baseUrl = "https://394ast.github.io/limbus.checklist/";
+      const baseUrl = "https://394ast.github.io/limbus.sharetool/";
       shareUrl.value = `${baseUrl}?states=${encodedData}`;
 
       adjustTextareaHeight(); // テキストエリアの高さを更新
@@ -298,7 +298,7 @@
 
           if (statusDiv) {
             const img = statusDiv.querySelector(".status-img");
-            img.src = `${baseImageUrl}limbus${id}.${state}.png`;
+            img.src = `${baseImageUrl}?text=${state}`;
             img.alt = state;
           }
         }
@@ -313,11 +313,11 @@
 
     if (id % 1000 === 1 && id >= 1001 && id <= 24001) {
       // IDが1001, 2001, ..., 24001の規則に一致する場合
-      img.src = `${baseImageUrl}limbus${id}.1.png`;
+      img.src = `${baseImageUrl}?text=1`;
       img.alt = 1;
     } else {
       // その他のIDは状態を0に変更
-      img.src = `${baseImageUrl}limbus${id}.0.png`;
+      img.src = `${baseImageUrl}?text=0`;
       img.alt = 0;
     }
     });
@@ -330,7 +330,7 @@
     const id = parseInt(statusDiv.getAttribute("data-id"), 10); // 数値に変換
 
     if (id >= 1001 && id < 13000) {
-      img.src = `${baseImageUrl}limbus${id}.${stage}.png`;
+      img.src = `${baseImageUrl}?text=${stage}`;
       img.alt = stage;
     }
     });
@@ -348,7 +348,7 @@
     const id = parseInt(statusDiv.getAttribute("data-id"), 10); // 数値に変換
 
     if (id >= 13001 && id < 25000) {
-      img.src = `${baseImageUrl}limbus${id}.${stage}.png`;
+      img.src = `${baseImageUrl}?text=${stage}`;
       img.alt = stage;
     }
     });
