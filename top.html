@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>リンバス所持人格E.G.O共有ツール</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+
+    h2 {
+      font-size: 24px;
+      margin-bottom: 20px;
+    }
+
+    .checklist-container {
+      display: flex;
+      flex-wrap: wrap;
+    }
+
+    .status {
+      width: 90px;
+      height: 90px;
+      padding: 0;
+      background-color: transparent;
+      border: none;
+      text-align: center;
+      cursor: pointer;
+      display: inline-block;
+      box-sizing: border-box;
+      margin: 0;
+    }
+
+    .status-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    #shareImg {
+      cursor: pointer;
+      width: 150px;
+      margin-top: 20px;
+    }
+
+    textarea {
+      width: 100%; /* 親要素の幅に合わせる */
+      padding: 10px; /* 余白を設定 */
+      font-size: 16px; /* フォントサイズを指定 */
+      resize: none; /* ユーザーによる手動のリサイズを無効にする */
+      overflow: hidden; /* スクロールバーを表示しない */
+      box-sizing: border-box; /* パディングとボーダーを含めたサイズ計算 */
+    }
+ 
+    #buttons-container {
+    display: grid; /* グリッドレイアウトを使用 */
+    grid-template-columns: repeat(2, max-content); /* 2列に分割 */
+    gap: 10px; /* ボタン間の余白 */
+    }
+
+    button {
+    padding: 10px;
+    max-width: 175px;
+    width: 100%;
+    box-sizing: border-box;
+    }
+
+  </style>
+</head>
+<body>
+
+  <h2>リンバス所持人格E.G.O共有ツール</h2>
+  <p>画像をクリックして強化段階を変更できます。<br>人格は同期化段階に合わせて画像も変わります。<br>実装順に並んでいます。<br>一番下に共有用URLが表示されます。</p>
+  <p><button id="reset0">初期人格E.G.Oのみ所持</button></p>
+  <div id="buttons-container">
+    <button id="Identitie-reset1">人格を全て同期1に</button>
+    <button id="E.G.O-reset1">E.G.Oを全て解析1に</button>
+    <button id="Identitie-reset2">人格を全て同期2に</button>
+    <button id="E.G.O-reset2">E.G.Oを全て解析2に</button>
+    <button id="Identitie-reset3">人格を全て同期3に</button>
+    <button id="E.G.O-reset3">E.G.Oを全て解析3に</button>
+    <button id="Identitie-reset4">人格を全て同期4に</button>
+    <button id="E.G.O-reset4">E.G.Oを全て解析4に</button>
+  </div>
+  <br>
+  <div class="checklist-container" data-group="1"></div>
+  <div class="checklist-container" data-group="2"></div>
+  <div class="checklist-container" data-group="3"></div>
+  <div class="checklist-container" data-group="4"></div>
+  <div class="checklist-container" data-group="5"></div>
+  <div class="checklist-container" data-group="6"></div>
+  <div class="checklist-container" data-group="7"></div>
+  <div class="checklist-container" data-group="8"></div>
+  <div class="checklist-container" data-group="9"></div>
+  <div class="checklist-container" data-group="10"></div>
+  <div class="checklist-container" data-group="11"></div>
+  <div class="checklist-container" data-group="12"></div>
+  <br>
+  <div class="checklist-container" data-group="13"></div>
+  <div class="checklist-container" data-group="14"></div>
+  <div class="checklist-container" data-group="15"></div>
+  <div class="checklist-container" data-group="16"></div>
+  <div class="checklist-container" data-group="17"></div>
+  <div class="checklist-container" data-group="18"></div>
+  <div class="checklist-container" data-group="19"></div>
+  <div class="checklist-container" data-group="20"></div>
+  <div class="checklist-container" data-group="21"></div>
+  <div class="checklist-container" data-group="22"></div>
+  <div class="checklist-container" data-group="23"></div>
+  <div class="checklist-container" data-group="24"></div>
+
+  <p>共有用URL: <textarea id="shareUrl" readonly></textarea></p>
+  <button id="copyButton">共有用URLをコピー</button>
+
+  <script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const baseImageUrl = "https://raw.githubusercontent.com/394ast/limbus.sharetool/main/";
+    const defaultState = 4; // 初期状態
+    const maxState = 4; // 状態の最大値
+    const groupSettings = {
+      1: { startId: 1001, count: 10 },
+      2: { startId: 2001, count: 10 },
+      3: { startId: 3001, count: 10 },
+      4: { startId: 4001, count: 10 },
+      5: { startId: 5001, count: 11 },
+      6: { startId: 6001, count: 10 },
+      7: { startId: 7001, count: 10 },
+      8: { startId: 8001, count: 10 },
+      9: { startId: 9001, count: 11 },
+      10: { startId: 10001, count: 11 },
+      11: { startId: 11001, count: 11 },
+      12: { startId: 12001, count: 10 },
+      13: { startId: 13001, count: 7 },
+      14: { startId: 14001, count: 7 },
+      15: { startId: 15001, count: 7 },
+      16: { startId: 16001, count: 7 },
+      17: { startId: 17001, count: 7 },
+      18: { startId: 18001, count: 7 },
+      19: { startId: 19001, count: 8 },
+      20: { startId: 20001, count: 7 },
+      21: { startId: 21001, count: 7 },
+      22: { startId: 22001, count: 7 },
+      23: { startId: 23001, count: 7 },
+      24: { startId: 24001, count: 7 },
+    }; // 新規で追加するときはここを変更する
+
+    // 各コンテナに要素を生成
+    document.querySelectorAll(".checklist-container").forEach(container => {
+      const group = container.getAttribute("data-group");
+      const { startId, count } = groupSettings[group];
+
+      for (let i = startId; i < startId + count; i++) {
+        const statusDiv = document.createElement("div");
+        statusDiv.className = "status";
+        statusDiv.setAttribute("data-id", i);
+
+        const img = document.createElement("img");
+        img.src = `${baseImageUrl}imgState${defaultState}/limbus${i}.${defaultState}.jpg`;
+        img.alt = defaultState;
+        img.className = "status-img";
+
+        statusDiv.appendChild(img);
+        container.appendChild(statusDiv);
+      }
+    });
+
+    const shareUrl = document.getElementById("shareUrl");
+
+    // 状態復元処理
+     const pathParts = window.location.pathname.split('/'); // パス部分をスラッシュで分割
+     const statesParam = pathParts[pathParts.length - 1]; // 最後の部分を取得
+
+     if (statesParam) {
+     const { result: decompressedStates } = decompressData(statesParam); // 解凍処理
+     restoreState(decompressedStates);
+     }
+    
+    // ページが読み込まれたときにもURLを更新
+      updateUrl();
+
+    // クリック時の状態変更とURL更新
+    document.querySelectorAll(".status").forEach(statusDiv => {
+      statusDiv.addEventListener("click", () => {
+        const img = statusDiv.querySelector(".status-img");
+        const id = statusDiv.getAttribute("data-id");
+        let currentState = parseInt(img.alt, 10) || 0; // alt属性から現在の状態を取得
+        currentState = (currentState + 1) % (maxState + 1); // 状態を循環
+        img.src = `${baseImageUrl}imgState${currentState}/limbus${id}.${currentState}.jpg`;
+        img.alt = currentState; // 新しい状態をalt属性に設定
+
+        updateUrl(); // URLを更新
+      });
+    });
+
+    //URL更新関数
+    function updateUrl() {
+        const states = Array.from(document.querySelectorAll(".status"))
+        .map(div => div.querySelector(".status-img").alt);
+
+        const compressedData = compressData(states);
+        const encodedData = toUrlSafeBase64(compressedData); // URLsafeBase64エンコード
+        const baseUrl = "https://394ast.github.io/limbus.sharetool";
+  
+        // パス形式に変更
+        shareUrl.value = `${baseUrl}/${encodedData}`;
+
+        adjustTextareaHeight(); // テキストエリアの高さを更新
+    }
+
+
+     // 圧縮関数（ランレングス圧縮）
+    function runLengthEncode(data) {
+      let result = '';
+      let count = 1;
+      for (let i = 1; i < data.length; i++) {
+        if (data[i] === data[i - 1]) {
+          count++;
+        } else {
+          result += count.toString(36) + data[i - 1]; // 36進数で表記
+          count = 1;
+        }
+      }
+      // 最後の部分を追加、最後の文字が'0'の場合は追加しない
+      if (data[data.length - 1] !== '0') {
+      result += count.toString(36) + data[data.length - 1];
+      }
+      return result;
+    }
+
+    // 解凍関数（ランレングス圧縮の逆）
+    function runLengthDecode(encodedData) {
+      let result = [];
+      let i = 0;
+      while (i < encodedData.length) {
+        let count = parseInt(encodedData[i],36); // 
+        let state = encodedData[i + 1];
+        for (let j = 0; j < count; j++) {
+          result.push(state);
+        }
+        i += 2; // 次のペアへ
+      }
+      return result;
+    }
+
+    // 圧縮処理
+    function compressData(states) {
+      const separator = '-';
+      const groupStates = Object.entries(groupSettings).map(([group, { count }], index) => {
+        const start = Object.values(groupSettings).slice(0, index).reduce((sum, g) => sum + g.count, 0);
+        const groupData = states.slice(start, start + count).join('');
+        // 圧縮後の長さが元の長さ以上の場合はそのまま元データを使用
+        const compressedDataR = `R${runLengthEncode(groupData)}`;
+        const compressedData0 = groupData.replace(/0+$/, '');
+        return compressedDataR.length < compressedData0.length ? compressedDataR : compressedData0
+      });
+      return groupStates.join(separator);
+    }
+
+    // 解凍処理
+    function decompressData(encodedData) {
+      const decodedData = fromUrlSafeBase64(encodedData); // URLsafeBase64デコード
+      const groups = decodedData.split('-');
+      const decompressedStates = [];
+
+      groups.forEach((group, index) => {
+      const { count } = Object.values(groupSettings)[index];
+      let decoded = [];
+
+      if (group) { // 空でないグループのみ処理
+      if (group.startsWith("R")) { // group の先頭が 'R' の場合
+        const modifiedGroup = group.slice(1); // 先頭の 'R' を削除
+        decoded = runLengthDecode(modifiedGroup);
+      } else {
+        decoded = [...group]; // group をそのまま文字配列に変換
+      }
+      }
+
+      // decoded の長さを count に合わせる
+      while (decoded.length < count) {
+      decoded.push("0"); // 不足分を補完
+      }
+      decompressedStates.push(...decoded);
+      });
+
+      return { result: decompressedStates };
+    }
+
+
+    // 状態を復元する関数 
+    function restoreState(states) {
+      let idx = 0;
+
+      Object.entries(groupSettings).forEach(([group, { startId, count }]) => {
+        const groupStates = states.slice(idx, idx + count); // グループ分の状態を取り出す
+        idx += count;
+
+        for (let i = 0; i < count; i++) {
+          const id = startId + i;
+          const state = groupStates[i];
+          const statusDiv = document.querySelector(`.status[data-id="${id}"]`);
+
+          if (statusDiv) {
+            const img = statusDiv.querySelector(".status-img");
+            img.src = `${baseImageUrl}imgState${state}/limbus${id}.${state}.jpg`;
+            img.alt = state;
+          }
+        }
+      });
+    }
+
+    // 全てボタンの処理
+    document.getElementById("reset0").addEventListener("click", () => {
+    document.querySelectorAll(".status").forEach(statusDiv => {
+    const img = statusDiv.querySelector(".status-img");
+    const id = parseInt(statusDiv.getAttribute("data-id"), 10); // 数値に変換
+
+    if (id % 1000 === 1 && id >= 1001 && id <= 24001) {
+      // IDが1001, 2001, ..., 24001の規則に一致する場合
+      img.src = `${baseImageUrl}imgState1/limbus${id}.1.jpg`;
+      img.alt = 1;
+    } else {
+      // その他のIDは状態を0に変更
+      img.src = `${baseImageUrl}imgState0/limbus${id}.0.jpg`;
+      img.alt = 0;
+    }
+    });
+    updateUrl(); // URLも更新
+    });
+
+    const  Identitiereset = (stage) => {
+    document.querySelectorAll(".status").forEach(statusDiv => {
+    const img = statusDiv.querySelector(".status-img");
+    const id = parseInt(statusDiv.getAttribute("data-id"), 10); // 数値に変換
+
+    if (id >= 1001 && id < 13000) {
+      img.src = `${baseImageUrl}imgState${stage}/limbus${id}.${stage}.jpg`;
+      img.alt = stage;
+    }
+    });
+    updateUrl(); // URLも更新
+    };
+
+    document.getElementById("Identitie-reset1").addEventListener("click", () => Identitiereset(1));
+    document.getElementById("Identitie-reset2").addEventListener("click", () => Identitiereset(2));
+    document.getElementById("Identitie-reset3").addEventListener("click", () => Identitiereset(3));
+    document.getElementById("Identitie-reset4").addEventListener("click", () => Identitiereset(4));
+    
+    const  EGOreset = (stage) => {
+    document.querySelectorAll(".status").forEach(statusDiv => {
+    const img = statusDiv.querySelector(".status-img");
+    const id = parseInt(statusDiv.getAttribute("data-id"), 10); // 数値に変換
+
+    if (id >= 13001 && id < 25000) {
+      img.src = `${baseImageUrl}imgState${stage}/limbus${id}.${stage}.jpg`;
+      img.alt = stage;
+    }
+    });
+    updateUrl(); // URLも更新
+    };
+
+    document.getElementById("E.G.O-reset1").addEventListener("click", () => EGOreset(1));
+    document.getElementById("E.G.O-reset2").addEventListener("click", () => EGOreset(2));
+    document.getElementById("E.G.O-reset3").addEventListener("click", () => EGOreset(3));
+    document.getElementById("E.G.O-reset4").addEventListener("click", () => EGOreset(4));
+
+    function adjustTextareaHeight() {
+    const textarea = document.getElementById('shareUrl');
+    
+    // 高さを自動的にリセット
+    textarea.style.height = 'auto'; 
+    
+    // テキストエリアの内容に基づいて高さを調整
+    textarea.style.height = textarea.scrollHeight + 'px';
+    }
+
+    // ページのリサイズ時にも調整
+    window.addEventListener('resize', adjustTextareaHeight);
+
+    // URLセーフBase64エンコード関数
+    function toUrlSafeBase64(data) {
+      return btoa(data)
+      .replace(/\+/g, '-')
+      .replace(/\//g, '_')
+      .replace(/=+$/, ''); // 末尾の = を削除
+    }
+
+    // URLセーフBase64デコード関数
+    function fromUrlSafeBase64(data) {
+      data = data.replace(/-/g, '+').replace(/_/g, '/');
+      // パディングが不足している場合は補完
+      while (data.length % 4) {
+      data += '=';
+      }
+    return atob(data);
+    }
+    
+    // コピーボタンをクリックしたときの処理
+    document.getElementById('copyButton').addEventListener('click', async function () {
+      const textarea = document.getElementById('shareUrl');
+      const url = textarea.value; // テキストエリアの内容を取得
+      try {
+      // Clipboard APIを使用してクリップボードにコピー
+      await navigator.clipboard.writeText(url);
+      alert('共有用URLをコピーしました');
+      } catch (err) {
+      alert('コピーに失敗しました。');
+      }
+    });
+
+  });
+  </script>
+
+</body>
+</html>
