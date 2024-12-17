@@ -169,13 +169,12 @@
     const shareUrl = document.getElementById("shareUrl");
 
     // 状態復元処理
-     const pathParts = window.location.pathname.split('/'); // パス部分をスラッシュで分割
-     const statesParam = pathParts[pathParts.length - 1]; // 最後の部分を取得
-
-     if (statesParam) {
-     const { result: decompressedStates } = decompressData(statesParam); // 解凍処理
-     restoreState(decompressedStates);
-     }
+    const urlParams = new URLSearchParams(window.location.search);
+    const statesParam = urlParams.get("states"); // クエリパラメータを取得
+    if (statesParam) {
+      const { result: decompressedStates } = decompressData(statesParam); // 解凍処理
+      restoreState(decompressedStates);
+    }
     
     // ページが読み込まれたときにもURLを更新
       updateUrl();
@@ -201,10 +200,8 @@
 
         const compressedData = compressData(states);
         const encodedData = toUrlSafeBase64(compressedData); // URLsafeBase64エンコード
-        const baseUrl = "https://394ast.github.io/limbus.sharetool";
-  
-        // パス形式に変更
-        shareUrl.value = `${baseUrl}/${encodedData}`;
+        const baseUrl = "https://394ast.github.io/limbus.sharetool/";
+        shareUrl.value = `${baseUrl}?states=${encodedData}`;
 
         adjustTextareaHeight(); // テキストエリアの高さを更新
     }
