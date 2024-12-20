@@ -1,413 +1,621 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>リンバス所持人格E.G.O共有ツール</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 20px;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>リンバス所持人格E.G.O共有ツール</title>
+    <style>
+        #buttons-container {
+        display: grid; /* グリッドレイアウトを使用 */
+        grid-template-columns: repeat(2, max-content); /* 2列に分割 */
+        gap: 10px; /* ボタン間の余白 */
+        }
 
-    h2 {
-      font-size: 24px;
-      margin-bottom: 20px;
-    }
+        .sharelist-group {
+            display: flex;
+            flex-wrap: wrap;
+        }
 
-    .checklist-container {
-      display: flex;
-      flex-wrap: wrap;
-    }
+        .container {
+            display: flex;
+            flex-direction: column;
+            width: 80px; /* コンテナの幅を指定 */
+        }
 
-    .status {
-      width: 90px;
-      height: 90px;
-      padding: 0;
-      background-color: transparent;
-      border: none;
-      text-align: center;
-      cursor: pointer;
-      display: inline-block;
-      box-sizing: border-box;
-      margin: 0;
-    }
+        .img{
+            width: 80px;
+            height: 80px;
+            cursor: pointer;
+        }
 
-    .status-img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
+        .lv-container {
+            display: none;
+            gap: 8px; /* テキストと入力フィールドの間にスペース */
+        }
 
-    #shareImg {
-      cursor: pointer;
-      width: 150px;
-      margin-top: 20px;
-    }
+        .lvinput {
+            width: 30px;
+        }
 
-    textarea {
-      width: 100%; /* 親要素の幅に合わせる */
-      padding: 10px; /* 余白を設定 */
-      font-size: 16px; /* フォントサイズを指定 */
-      resize: none; /* ユーザーによる手動のリサイズを無効にする */
-      overflow: hidden; /* スクロールバーを表示しない */
-      box-sizing: border-box; /* パディングとボーダーを含めたサイズ計算 */
-    }
- 
-    #buttons-container {
-    display: grid; /* グリッドレイアウトを使用 */
-    grid-template-columns: repeat(2, max-content); /* 2列に分割 */
-    gap: 10px; /* ボタン間の余白 */
-    }
+        textarea{
+            width: 90%;
+            resize:none;
+        }
 
-    button {
-    padding: 10px;
-    max-width: 175px;
-    width: 100%;
-    box-sizing: border-box;
-    }
-
-  </style>
+    </style>
 </head>
+
 <body>
+    <h2>リンバス所持人格E.G.O共有ツール</h2>
+    <p>画像をクリックして強化段階を変更できます。<br>
+        人格は同期化段階に合わせて画像も変わります。<br>
+        実装順に並んでいます。<br>
+        一番下に共有用URLが表示されます。</p>
+    <input type="checkbox" id="enableLv"> Lv共有機能を有効にする（未所持の人格のLvは共有できません）
+    <p><button id="reset0">初期人格E.G.Oのみ所持</button></p>
+    <div id="buttons-container">
+        <button id="Identity-reset1">人格を全て同期1に</button>
+        <button id="E.G.O-reset1">E.G.Oを全て解析1に</button>
+        <button id="Identity-reset2">人格を全て同期2に</button>
+        <button id="E.G.O-reset2">E.G.Oを全て解析2に</button>
+        <button id="Identity-reset3">人格を全て同期3に</button>
+        <button id="E.G.O-reset3">E.G.Oを全て解析3に</button>
+        <button id="Identity-reset4">人格を全て同期4に</button>
+        <button id="E.G.O-reset4">E.G.Oを全て解析4に</button>
+    </div>
+    <br>
+    <div class="sharelist-group" id="sharelist-group1"></div>
+    <div class="sharelist-group" id="sharelist-group2"></div>
+    <div class="sharelist-group" id="sharelist-group3"></div>
+    <div class="sharelist-group" id="sharelist-group4"></div>
+    <div class="sharelist-group" id="sharelist-group5"></div>
+    <div class="sharelist-group" id="sharelist-group6"></div>
+    <div class="sharelist-group" id="sharelist-group7"></div>
+    <div class="sharelist-group" id="sharelist-group8"></div>
+    <div class="sharelist-group" id="sharelist-group9"></div>
+    <div class="sharelist-group" id="sharelist-group10"></div>
+    <div class="sharelist-group" id="sharelist-group11"></div>
+    <div class="sharelist-group" id="sharelist-group12"></div>
+    <br>
+    <div class="sharelist-group" id="sharelist-group13"></div>
+    <div class="sharelist-group" id="sharelist-group14"></div>
+    <div class="sharelist-group" id="sharelist-group15"></div>
+    <div class="sharelist-group" id="sharelist-group16"></div>
+    <div class="sharelist-group" id="sharelist-group17"></div>
+    <div class="sharelist-group" id="sharelist-group18"></div>
+    <div class="sharelist-group" id="sharelist-group19"></div>
+    <div class="sharelist-group" id="sharelist-group20"></div>
+    <div class="sharelist-group" id="sharelist-group21"></div>
+    <div class="sharelist-group" id="sharelist-group22"></div>
+    <div class="sharelist-group" id="sharelist-group23"></div>
+    <div class="sharelist-group" id="sharelist-group24"></div>
+    <br>
+    <p>共有用URL: <textarea class="share-url-textarea" readonly></textarea></p>
+    <button id="copyButton">共有用URLをコピー</button>
+    <br>
+    <br>
+    <p>もし共有用URLが長くて不便だと感じたら、短縮URLを生成することもできます。<br>
+    ただし、生成数上限に達しており、生成できない可能性があります。<br>
+    スマホだと短縮URLのコピーにおそらく失敗するので、その際は手動でコピーしてください。</p>
+    <p>短縮URL: <textarea class="shortened-url-textarea" readonly></textarea></p>
+    <button id="shortenButton">短縮URLを生成してコピー</button>
 
-  <h2>リンバス所持人格E.G.O共有ツール</h2>
-  <p>画像をクリックして強化段階を変更できます。<br>人格は同期化段階に合わせて画像も変わります。<br>実装順に並んでいます。<br>一番下に共有用URLが表示されます。</p>
-  <p><button id="reset0">初期人格E.G.Oのみ所持</button></p>
-  <div id="buttons-container">
-    <button id="Identitie-reset1">人格を全て同期1に</button>
-    <button id="E.G.O-reset1">E.G.Oを全て解析1に</button>
-    <button id="Identitie-reset2">人格を全て同期2に</button>
-    <button id="E.G.O-reset2">E.G.Oを全て解析2に</button>
-    <button id="Identitie-reset3">人格を全て同期3に</button>
-    <button id="E.G.O-reset3">E.G.Oを全て解析3に</button>
-    <button id="Identitie-reset4">人格を全て同期4に</button>
-    <button id="E.G.O-reset4">E.G.Oを全て解析4に</button>
-  </div>
-  <br>
-  <div class="checklist-container" data-group="1"></div>
-  <div class="checklist-container" data-group="2"></div>
-  <div class="checklist-container" data-group="3"></div>
-  <div class="checklist-container" data-group="4"></div>
-  <div class="checklist-container" data-group="5"></div>
-  <div class="checklist-container" data-group="6"></div>
-  <div class="checklist-container" data-group="7"></div>
-  <div class="checklist-container" data-group="8"></div>
-  <div class="checklist-container" data-group="9"></div>
-  <div class="checklist-container" data-group="10"></div>
-  <div class="checklist-container" data-group="11"></div>
-  <div class="checklist-container" data-group="12"></div>
-  <br>
-  <div class="checklist-container" data-group="13"></div>
-  <div class="checklist-container" data-group="14"></div>
-  <div class="checklist-container" data-group="15"></div>
-  <div class="checklist-container" data-group="16"></div>
-  <div class="checklist-container" data-group="17"></div>
-  <div class="checklist-container" data-group="18"></div>
-  <div class="checklist-container" data-group="19"></div>
-  <div class="checklist-container" data-group="20"></div>
-  <div class="checklist-container" data-group="21"></div>
-  <div class="checklist-container" data-group="22"></div>
-  <div class="checklist-container" data-group="23"></div>
-  <div class="checklist-container" data-group="24"></div>
+    <script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const baseImageUrl = "https://raw.githubusercontent.com/394ast/limbus.sharetool/main/";
+        const defaultState = 4; // 初期状態
+        const maxState = 4; // 状態の最大値
+        const defaultLv = 0; //未所持を想定
+        const lvCheckbox = document.getElementById("enableLv");
+        const groupsData = [
+        { sharelistId: 'sharelist-group1', groupCount: 10, startId: 1001 },
+        { sharelistId: 'sharelist-group2', groupCount: 10, startId: 2001 },
+        { sharelistId: 'sharelist-group3', groupCount: 10, startId: 3001 },
+        { sharelistId: 'sharelist-group4', groupCount: 10, startId: 4001 },
+        { sharelistId: 'sharelist-group5', groupCount: 11, startId: 5001 },
+        { sharelistId: 'sharelist-group6', groupCount: 10, startId: 6001 },
+        { sharelistId: 'sharelist-group7', groupCount: 10, startId: 7001 },
+        { sharelistId: 'sharelist-group8', groupCount: 10, startId: 8001 },
+        { sharelistId: 'sharelist-group9', groupCount: 11, startId: 9001 },
+        { sharelistId: 'sharelist-group10', groupCount: 11, startId: 10001 },
+        { sharelistId: 'sharelist-group11', groupCount: 11, startId: 11001 },
+        { sharelistId: 'sharelist-group12', groupCount: 10, startId: 12001 },
+        { sharelistId: 'sharelist-group13', groupCount: 7, startId: 13001 },
+        { sharelistId: 'sharelist-group14', groupCount: 7, startId: 14001 },
+        { sharelistId: 'sharelist-group15', groupCount: 7, startId: 15001 },
+        { sharelistId: 'sharelist-group16', groupCount: 7, startId: 16001 },
+        { sharelistId: 'sharelist-group17', groupCount: 7, startId: 17001 },
+        { sharelistId: 'sharelist-group18', groupCount: 7, startId: 18001 },
+        { sharelistId: 'sharelist-group19', groupCount: 8, startId: 19001 },
+        { sharelistId: 'sharelist-group20', groupCount: 7, startId: 20001 },
+        { sharelistId: 'sharelist-group21', groupCount: 7, startId: 21001 },
+        { sharelistId: 'sharelist-group22', groupCount: 7, startId: 22001 },
+        { sharelistId: 'sharelist-group23', groupCount: 7, startId: 23001 },
+        { sharelistId: 'sharelist-group24', groupCount: 7, startId: 24001 },
+        ];// 新規人格E.G.Oを追加するときはここを変更する
 
-  <p>共有用URL: <textarea id="shareUrl" readonly></textarea></p>
-  <button id="copyButton">共有用URLをコピー</button>
+        groupsData.forEach(({ sharelistId, groupCount, startId }) => {
+            const sharelistGroup = document.getElementById(sharelistId);
 
-  <script>
-  document.addEventListener("DOMContentLoaded", () => {
-    const baseImageUrl = "https://raw.githubusercontent.com/394ast/limbus.sharetool/main/";
-    const defaultState = 4; // 初期状態
-    const maxState = 4; // 状態の最大値
-    const groupSettings = {
-      1: { startId: 1001, count: 10 },
-      2: { startId: 2001, count: 10 },
-      3: { startId: 3001, count: 10 },
-      4: { startId: 4001, count: 10 },
-      5: { startId: 5001, count: 11 },
-      6: { startId: 6001, count: 10 },
-      7: { startId: 7001, count: 10 },
-      8: { startId: 8001, count: 10 },
-      9: { startId: 9001, count: 11 },
-      10: { startId: 10001, count: 11 },
-      11: { startId: 11001, count: 11 },
-      12: { startId: 12001, count: 10 },
-      13: { startId: 13001, count: 7 },
-      14: { startId: 14001, count: 7 },
-      15: { startId: 15001, count: 7 },
-      16: { startId: 16001, count: 7 },
-      17: { startId: 17001, count: 7 },
-      18: { startId: 18001, count: 7 },
-      19: { startId: 19001, count: 8 },
-      20: { startId: 20001, count: 7 },
-      21: { startId: 21001, count: 7 },
-      22: { startId: 22001, count: 7 },
-      23: { startId: 23001, count: 7 },
-      24: { startId: 24001, count: 7 },
-    }; // 新規で追加するときはここを変更する
+            for (let i = 0; i < groupCount; i++) {
+                const container = document.createElement('div');
+                container.classList.add('container');
+                container.dataset.id = startId + i;
 
-    // 各コンテナに要素を生成
-    document.querySelectorAll(".checklist-container").forEach(container => {
-      const group = container.getAttribute("data-group");
-      const { startId, count } = groupSettings[group];
+                // 画像要素を作成
+                const img = document.createElement('img');
+                img.dataset.id = startId + i;
+                img.src = `${baseImageUrl}imgState${defaultState}/limbus${id}.${defaultState}.jpg`;
+                img.alt = `${defaultState}`;
+                img.classList.add('img');
+                container.appendChild(img);
 
-      for (let i = startId; i < startId + count; i++) {
-        const statusDiv = document.createElement("div");
-        statusDiv.className = "status";
-        statusDiv.setAttribute("data-id", i);
+                // Lvの入力フィールド（条件付きで追加）
+                if (startId + i < 13000) {
+                    const lvContainer = document.createElement('div');
+                    lvContainer.classList.add('lv-container');
+                    const lvText = document.createElement('span');
+                    lvText.textContent = 'Lv:';
+                    lvText.classList.add('lvtext');
+                    const lvInput = document.createElement('input');
+                    lvInput.type = 'number';
+                    lvInput.value = defaultLv;
+                    lvInput.min = 0;
+                    lvInput.max = 50; //レベル上限解放時はここを変更、下の2か所も変更を忘れずに
+                    lvInput.step = 1; //レベルは整数のみ
+                    lvInput.dataset.id = startId + i;
+                    lvInput.classList.add('lvinput');
 
-        const img = document.createElement("img");
-        img.src = `${baseImageUrl}imgState${defaultState}/limbus${i}.${defaultState}.jpg`;
-        img.alt = defaultState;
-        img.className = "status-img";
+                    lvInput.addEventListener('input', function () {
+                        let value = lvInput.value.trim();
+                        if (value === "") {
+                            lvInput.value = null; // nullに設定
+                            return;
+                        }
+                        value = parseInt(value);
+                        if (isNaN(value) || value % 1 !== 0) {
+                            lvInput.value = Math.floor(lvInput.value); // 整数に変換
+                            return; // 処理を終了
+                        }
+                        if (value < 0) {
+                            lvInput.value = 0;
+                        } else if (value > 50) {
+                            lvInput.value = 50;
+                        }
+                    }); // 入力を制限、レベル上限解放時はここも変更、上の1か所も変更を忘れずに
 
-        statusDiv.appendChild(img);
-        container.appendChild(statusDiv);
-      }
-    });
+                    lvContainer.appendChild(lvText);
+                    lvContainer.appendChild(lvInput);
+                    container.appendChild(lvContainer);
+                }
 
-    const shareUrl = document.getElementById("shareUrl");
+                // sharelistGroupに追加
+                sharelistGroup.appendChild(container);
+            }
+        });
 
-    // 状態復元処理
-    const urlParams = new URLSearchParams(window.location.search);
-    const statesParam = urlParams.get("states"); // クエリパラメータを取得
-    if (statesParam) {
-      const { result: decompressedStates } = decompressData(statesParam); // 解凍処理
-      restoreState(decompressedStates);
-    }
-    
-    // ページが読み込まれたときにもURLを更新
-      updateUrl();
+        // チェックボックスの状態に応じてlv-containerの表示/非表示を切り替える
+        lvCheckbox.addEventListener('change', () => {
+            const lvContainers = document.querySelectorAll('.lv-container');
+            lvContainers.forEach(lvContainer => {
+            lvContainer.style.display = lvCheckbox.checked ? 'flex' : 'none';
+            });
+            updateUrl();
+        });
 
-    // クリック時の状態変更とURL更新
-    document.querySelectorAll(".status").forEach(statusDiv => {
-      statusDiv.addEventListener("click", () => {
-        const img = statusDiv.querySelector(".status-img");
-        const id = statusDiv.getAttribute("data-id");
-        let currentState = parseInt(img.alt, 10) || 0; // alt属性から現在の状態を取得
-        currentState = (currentState + 1) % (maxState + 1); // 状態を循環
-        img.src = `${baseImageUrl}imgState${currentState}/limbus${id}.${currentState}.jpg`;
-        img.alt = currentState; // 新しい状態をalt属性に設定
-
-        updateUrl(); // URLを更新
-      });
-    });
-
-    //URL更新関数
-    function updateUrl() {
-        const states = Array.from(document.querySelectorAll(".status"))
-        .map(div => div.querySelector(".status-img").alt);
-
-        const compressedData = compressData(states);
-        const encodedData = toUrlSafeBase64(compressedData); // URLsafeBase64エンコード
-        const baseUrl = "https://394ast.github.io/limbus.sharetool/";
-        shareUrl.value = `${baseUrl}?states=${encodedData}`;
-
-        adjustTextareaHeight(); // テキストエリアの高さを更新
-    }
-
-
-     // 圧縮関数（ランレングス圧縮）
-    function runLengthEncode(data) {
-      let result = '';
-      let count = 1;
-      for (let i = 1; i < data.length; i++) {
-        if (data[i] === data[i - 1]) {
-          count++;
-        } else {
-          result += count.toString(36) + data[i - 1]; // 36進数で表記
-          count = 1;
+        //状態復元処理
+        let urlParams = new URLSearchParams(window.location.search);
+        // window.location.searchの文字列を取得し、&amp;を&に置き換え(tinyURLのリダイレクトに対応)
+        let searchString = window.location.search.replace(/&amp;/g, '&');
+        urlParams = new URLSearchParams(searchString);
+        const imgParam = urlParams.get("img");
+        const lvParam = urlParams.get("lv");
+        if(imgParam){
+            const decompressedImg = decompressImgData(imgParam);
+            restoreImg(decompressedImg);
         }
-      }
-      // 最後の部分を追加、最後の文字が'0'の場合は追加しない
-      if (data[data.length - 1] !== '0') {
-      result += count.toString(36) + data[data.length - 1];
-      }
-      return result;
-    }
-
-    // 解凍関数（ランレングス圧縮の逆）
-    function runLengthDecode(encodedData) {
-      let result = [];
-      let i = 0;
-      while (i < encodedData.length) {
-        let count = parseInt(encodedData[i],36); // 
-        let state = encodedData[i + 1];
-        for (let j = 0; j < count; j++) {
-          result.push(state);
+        if(lvParam){
+            document.getElementById("enableLv").checked = true;
+            lvCheckbox.dispatchEvent(new Event('change')); // 切り替えイベントを発火
+            const decompressedlv = decompresslvData(lvParam);
+            restorelv(decompressedlv);
         }
-        i += 2; // 次のペアへ
-      }
-      return result;
-    }
 
-    // 圧縮処理
-    function compressData(states) {
-      const separator = '-';
-      const groupStates = Object.entries(groupSettings).map(([group, { count }], index) => {
-        const start = Object.values(groupSettings).slice(0, index).reduce((sum, g) => sum + g.count, 0);
-        const groupData = states.slice(start, start + count).join('');
-        // 圧縮後の長さが元の長さ以上の場合はそのまま元データを使用
-        const compressedDataR = `R${runLengthEncode(groupData)}`;
-        const compressedData0 = groupData.replace(/0+$/, '');
-        return compressedDataR.length < compressedData0.length ? compressedDataR : compressedData0
-      });
-      return groupStates.join(separator);
-    }
+        // ページが読み込まれたときにもURLを更新
+        updateUrl();
 
-    // 解凍処理
-    function decompressData(encodedData) {
-      const decodedData = fromUrlSafeBase64(encodedData); // URLsafeBase64デコード
-      const groups = decodedData.split('-');
-      const decompressedStates = [];
+        // クリック時の状態変更処理
+        document.querySelectorAll(".container").forEach(container => {
+            container.addEventListener("click", (event) => {
+            // クリックされたのがlvだった場合、親のクリックイベントを発火させない
+            if (event.target.classList.contains("lvinput") || event.target.classList.contains("lvtext")) {
+                event.stopPropagation();
+                return;
+            }
+            const img = container.querySelector(".img"); 
+            const id = container.dataset.id;
+            let currentState = parseInt(img.alt, 10) || 0; // alt属性から現在の状態を取得
+            currentState = (currentState + 1) % (maxState + 1); // 状態を循環
+            img.src = `${baseImageUrl}imgState${currentState}/limbus${id}.${currentState}.jpg`;
+            img.alt = currentState; // 新しい状態をalt属性に設定
 
-      groups.forEach((group, index) => {
-      const { count } = Object.values(groupSettings)[index];
-      let decoded = [];
+            updateUrl(); // URLを更新
+            });
+        });
 
-      if (group) { // 空でないグループのみ処理
-      if (group.startsWith("R")) { // group の先頭が 'R' の場合
-        const modifiedGroup = group.slice(1); // 先頭の 'R' を削除
-        decoded = runLengthDecode(modifiedGroup);
-      } else {
-        decoded = [...group]; // group をそのまま文字配列に変換
-      }
-      }
+        //レベル変更時の処理
+        let debounceTimeout;
 
-      // decoded の長さを count に合わせる
-      while (decoded.length < count) {
-      decoded.push("0"); // 不足分を補完
-      }
-      decompressedStates.push(...decoded);
-      });
+        document.querySelectorAll('.lvinput').forEach(lvInput => {
+            lvInput.addEventListener('input', (event) => {
+                clearTimeout(debounceTimeout); // 既存のタイマーをクリア
+                debounceTimeout = setTimeout(() => {
+                    updateUrl(); // 一定時間後に呼び出し
+                }, 500); // 500ミリ秒後に呼び出し（適宜調整可能）
+            });
+        });
 
-      return { result: decompressedStates };
-    }
+        //URL更新関数
+        function updateUrl() {
+            const enableLv = document.getElementById("enableLv").checked;
+            const baseUrl = "https://394ast.github.io/limbus.sharetool/";
+            const compressedImgData = compressImgData();
+            const encodedImgData = toUrlSafeBase64(compressedImgData);
+            let url = `${baseUrl}?img=${encodedImgData}`;
+    
+            // lvが有効なら、lvのデータも追加
+            if(enableLv){
+                const compressedlvData = compresslvData();
+                url += `&lv=${compressedlvData}`;
+            }
 
-
-    // 状態を復元する関数 
-    function restoreState(states) {
-      let idx = 0;
-
-      Object.entries(groupSettings).forEach(([group, { startId, count }]) => {
-        const groupStates = states.slice(idx, idx + count); // グループ分の状態を取り出す
-        idx += count;
-
-        for (let i = 0; i < count; i++) {
-          const id = startId + i;
-          const state = groupStates[i];
-          const statusDiv = document.querySelector(`.status[data-id="${id}"]`);
-
-          if (statusDiv) {
-            const img = statusDiv.querySelector(".status-img");
-            img.src = `${baseImageUrl}imgState${state}/limbus${id}.${state}.jpg`;
-            img.alt = state;
-          }
+            // クラス名でテキストエリアを取得して書き換え
+            const shareUrl = document.querySelector('.share-url-textarea');
+            shareUrl.value = url;
+            // テキストエリアの大きさを調整
+            adjustTextareaHeight();
+            // 短縮用URLを消去
+            document.querySelector('.shortened-url-textarea').value = '';
         }
-      });
-    }
 
-    // 全てボタンの処理
-    document.getElementById("reset0").addEventListener("click", () => {
-    document.querySelectorAll(".status").forEach(statusDiv => {
-    const img = statusDiv.querySelector(".status-img");
-    const id = parseInt(statusDiv.getAttribute("data-id"), 10); // 数値に変換
+        // 圧縮関数（ランレングス圧縮）
+        function runLengthEncode(data) {
+            let result = '';
+            let count = 1;
+            for (let i = 1; i < data.length; i++) {
+                if (data[i] === data[i - 1]) {
+                count++;
+            } else {
+                result += count.toString(36) + data[i - 1]; // 36進数で表記
+            count = 1;
+            }
+            }
+        // 最後の部分を追加、最後の文字が'0'の場合は追加しない
+            if (data[data.length - 1] !== '0') {
+            result += count.toString(36) + data[data.length - 1];
+            }
+        return result;
+        }
+        
+        // 解凍関数（ランレングス圧縮の逆）
+        function runLengthDecode(encodedData) {
+            let result = [];
+            let i = 0;
+            while (i < encodedData.length) {
+                let count = parseInt(encodedData[i],36); // 
+                let state = encodedData[i + 1];
+                for (let j = 0; j < count; j++) {
+                    result.push(state);
+                }
+                i += 2; // 次のペアへ
+            }
+        return result;
+        }
 
-    if (id % 1000 === 1 && id >= 1001 && id <= 24001) {
-      // IDが1001, 2001, ..., 24001の規則に一致する場合
-      img.src = `${baseImageUrl}imgState1/limbus${id}.1.jpg`;
-      img.alt = 1;
-    } else {
-      // その他のIDは状態を0に変更
-      img.src = `${baseImageUrl}imgState0/limbus${id}.0.jpg`;
-      img.alt = 0;
-    }
-    });
-    updateUrl(); // URLも更新
-    });
+        // 圧縮処理
+        function compressImgData() {
+            const separator = '-'; // グループを区切るセパレータ
+            // グループごとの状態を取得し、連結して返す
+            const groupStates = groupsData.map(({ sharelistId }) => {
+                const sharelistGroup = document.getElementById(sharelistId);
+                const images = sharelistGroup.querySelectorAll(".img");
+                const states = Array.from(images).map(img => parseInt(img.alt, 10) || 0);
+                const allstates = states.join(""); // グループ内の状態を連結
+                const compressedImgDataR =  `R${runLengthEncode(allstates)}`;
+                const compressedImgData0 = allstates.replace(/0+$/, '');
+                return compressedImgDataR.length < compressedImgData0.length ? compressedImgDataR : compressedImgData0;
+            });    
+        return groupStates.join(separator); // グループ間をseparatorで区切る
+        }
 
-    const  Identitiereset = (stage) => {
-    document.querySelectorAll(".status").forEach(statusDiv => {
-    const img = statusDiv.querySelector(".status-img");
-    const id = parseInt(statusDiv.getAttribute("data-id"), 10); // 数値に変換
+        function compresslvData() {
+            // lvInput要素をすべて取得
+            const lvInputs = document.querySelectorAll('.lvinput');
+            const lvValues = [];
+            lvInputs.forEach(lvInput => {
+                const id = lvInput.dataset.id;
+                // 対応するimg要素を取得
+                const img = document.querySelector(`.container[data-id="${id}"] .img`);
+                // imgのaltが0以外の場合(所持している人格)、そのlvInputの値を取得
+                if (img && parseInt(img.alt, 10) !== 0) {
+                    const value = lvInput.value.trim() === "" ? "00" : parseInt(lvInput.value).toString(16).padStart(2, '0');
+                    lvValues.push(value);// null入力にも対応
+                }
+            });
+            let lvString = lvValues.join(""); 
+            let compressedlvData = "";
+            let leftover = "";
+            while (lvString.length >= 5) {
+                let chunk = lvString.slice(0, 5);
+                lvString = lvString.slice(5); // 残りの文字列を更新
+                // 16進数から10進数に変換
+                let decimal = parseInt(chunk, 16);
+                // 10進数から32進数に変換
+                let base32 = decimal.toString(32);
+                base32 = base32.padStart(4,'0'); // 4文字になるように
+                compressedlvData += base32;
+            } // 16進数5文字を32進数4文字に変換
+            // 余りを繋げる
+            leftover = lvString;
+            compressedlvData += `-${leftover}`;
+            return compressedlvData;
+        }
+        
+        // 解凍処理
+        function decompressImgData(encodedImgData) {
+            const decodedImgData = fromUrlSafeBase64(encodedImgData);
+            const groups = decodedImgData.split('-');
+            const decompressedImg = [];
 
-    if (id >= 1001 && id < 13000) {
-      img.src = `${baseImageUrl}imgState${stage}/limbus${id}.${stage}.jpg`;
-      img.alt = stage;
-    }
-    });
-    updateUrl(); // URLも更新
-    };
+            groups.forEach((group, index) => {
+                const { groupCount } = Object.values(groupsData)[index];
+                let decoded = [];
 
-    document.getElementById("Identitie-reset1").addEventListener("click", () => Identitiereset(1));
-    document.getElementById("Identitie-reset2").addEventListener("click", () => Identitiereset(2));
-    document.getElementById("Identitie-reset3").addEventListener("click", () => Identitiereset(3));
-    document.getElementById("Identitie-reset4").addEventListener("click", () => Identitiereset(4));
+                if (group) { // 空でないグループのみ処理
+                    if (group.startsWith("R")) { // group の先頭が 'R' の場合
+                        const modifiedGroup = group.slice(1); // 先頭の 'R' を削除
+                        decoded = runLengthDecode(modifiedGroup);
+                    } else {
+                        decoded = [...group]; // group をそのまま文字配列に変換
+                    }
+                }
+
+                // decoded の長さを count に合わせる
+                while (decoded.length < groupCount) {
+                decoded.push("0"); // 不足分を補完
+                }
+                decompressedImg.push(...decoded);
+            });
+            return decompressedImg;
+        }
+
+        function decompresslvData(lvParam){
+            const parts = lvParam.split('-');
+            let base32 = parts[0];
+            const remainder16 = parts[1]; 
+            let base16 = "";
+            while(base32.length >=4){
+                let chunk = base32.slice(0,4);
+                base32 = base32.slice(4); // 残りの文字列を更新
+                let decimal = parseInt(chunk, 32);
+                let push16 = decimal.toString(16);
+                push16 = push16.padStart(5, '0'); // 5文字になるように
+                base16 += push16;
+            }
+            //余りを繋げる
+            base16 += remainder16;
+            if (base16.length % 2 !== 0) {
+                alert("lvの共有にエラーが発生しました");
+            }
+            let decompressedlv = [];
+            for (let i = 0; i < base16.length; i += 2) {
+                let hexPair = base16.slice(i, i + 2); // 2文字を取り出す
+                let decimalValue = parseInt(hexPair, 16); // 16進数を10進数に変換
+                decompressedlv.push(decimalValue);
+            }
+        return decompressedlv;
+        }
+
+        // 状態復元用関数 
+        function restoreImg(decompressedImg){
+            let idx = 0;
+
+            groupsData.forEach(({ startId, groupCount }) => {
+                const groupImg = decompressedImg.slice(idx, idx + groupCount); // グループ分の状態を取り出す
+                idx += groupCount;
+
+                for (let i = 0; i < groupCount; i++) {
+                    const id = startId + i;
+                    const state = groupImg[i];
+                    const img = document.querySelector(`img[data-id="${id}"]`);
+                    if (img) {
+                        img.src = `${baseImageUrl}imgState${state}/limbus${id}.${state}.jpg`;
+                        img.alt = state;
+                    }
+                }
+            });
+        }
+
+        function restorelv(decompressedlv){
+            const lvInputs = document.querySelectorAll('.lvinput'); // lvInput を取得
+            let index = 0; // decompressedlv の配列インデックス
+
+            lvInputs.forEach(lvInput => {
+                const imgElement = lvInput.closest('.container')?.querySelector('.img'); // 対応する img を取得
+                    if (imgElement && imgElement.alt === '0') {
+                        // img.alt が 0 の場合、配列は進めずスキップ
+                        return;
+                    }
+                    if (index < decompressedlv.length) {
+                        // 条件に合致する場合のみ lvInput の値を更新
+                        lvInput.value = decompressedlv[index];
+                        index++; // 配列のインデックスを進める
+                    }
+            });
+
+            // 配列が余った場合のエラーチェック
+            if (index < decompressedlv.length) {
+                alert("lvの共有にエラーが発生しました。");
+            }
+        }
+
+        //resetボタンの処理
+        document.getElementById('reset0').addEventListener('click', function() {
+            const images = document.querySelectorAll('img');
+            images.forEach(img => {
+                const id = parseInt(img.dataset.id, 10); 
+                if (id % 1000 === 1 && id >= 1001 && id <= 24001) {
+                // IDが1001, 2001, ..., 24001の規則に一致する場合
+                    img.src = `${baseImageUrl}imgState1/limbus${id}.1.jpg`;
+                    img.alt = 1;
+                } else {
+                // その他のIDは状態を0に変更
+                    img.src = `${baseImageUrl}imgState0/limbus${id}.0.jpg`;
+                    img.alt = 0;
+                }
+            });
+            updateUrl();
+        });
+
+        const Identityreset = (stage) => {
+            const images = document.querySelectorAll('img');
+            images.forEach(img => {
+                const id = parseInt(img.dataset.id, 10);
+                if (id >= 1001 && id < 13000) {
+                    img.src = `${baseImageUrl}imgState${stage}/limbus${id}.${stage}.jpg`;
+                    img.alt = stage;
+                }
+            });
+            updateUrl();
+        };
+
+        document.getElementById("Identity-reset1").addEventListener("click", () => Identityreset(1));
+        document.getElementById("Identity-reset2").addEventListener("click", () => Identityreset(2));
+        document.getElementById("Identity-reset3").addEventListener("click", () => Identityreset(3));
+        document.getElementById("Identity-reset4").addEventListener("click", () => Identityreset(4));
+
+        const EGOreset = (stage) => {
+            const images = document.querySelectorAll('img');
+            images.forEach(img => {
+                const id = parseInt(img.dataset.id, 10);
+                if (id >= 13001 && id < 25000) {
+                    img.src = `${baseImageUrl}imgState${stage}/limbus${id}.${stage}.jpg`;  
+                    img.alt = stage;
+                }
+            });
+            updateUrl();
+        };
+
+        document.getElementById("E.G.O-reset1").addEventListener("click", () => EGOreset(1));
+        document.getElementById("E.G.O-reset2").addEventListener("click", () => EGOreset(2));
+        document.getElementById("E.G.O-reset3").addEventListener("click", () => EGOreset(3));
+        document.getElementById("E.G.O-reset4").addEventListener("click", () => EGOreset(4));
+
+        // テキストエリアの調整関数
+        function adjustTextareaHeight() {
+            const textareas = document.querySelectorAll('.share-url-textarea');
     
-    const  EGOreset = (stage) => {
-    document.querySelectorAll(".status").forEach(statusDiv => {
-    const img = statusDiv.querySelector(".status-img");
-    const id = parseInt(statusDiv.getAttribute("data-id"), 10); // 数値に変換
+            textareas.forEach(textarea => {
+                // 高さを自動的にリセット
+                textarea.style.height = 'auto'; 
+        
+                // テキストエリアの内容に基づいて高さを調整
+                textarea.style.height = textarea.scrollHeight + 'px';
+            });
+        }
 
-    if (id >= 13001 && id < 25000) {
-      img.src = `${baseImageUrl}imgState${stage}/limbus${id}.${stage}.jpg`;
-      img.alt = stage;
-    }
+        // ページのリサイズ時にも調整
+        window.addEventListener('resize', adjustTextareaHeight);
+
+        // ページのリサイズ時にも調整
+        window.addEventListener('resize', adjustTextareaHeight);
+
+        // URLセーフBase64エンコード関数
+        function toUrlSafeBase64(data) {
+            return btoa(data)
+                .replace(/\+/g, '-')
+                .replace(/\//g, '_')
+                .replace(/=+$/, ''); 
+        }
+
+        // URLセーフBase64デコード関数
+        function fromUrlSafeBase64(data) {
+            data = data.replace(/-/g, '+').replace(/_/g, '/');
+            // パディングが不足している場合は補完
+            while (data.length % 4) {
+                data += '=';
+            }
+        return atob(data);
+        }
+
+        // 共有用URLのコピーボタンの処理
+        document.getElementById('copyButton').addEventListener('click', async function () {
+            const textarea = document.querySelector('.share-url-textarea');
+            const url = textarea.value;
+            try {
+                // Clipboard APIを使用してクリップボードにコピー
+                await navigator.clipboard.writeText(url);
+                alert('共有用URLをコピーしました');
+            } catch (err) {
+                alert('コピーに失敗しました。');
+            }
+        });
+
+        //短縮ボタンの処理
+        let isProcessing = false;
+
+        document.getElementById("shortenButton").addEventListener("click", async function () {
+            // 既に処理中の場合は無視
+            if (isProcessing) return;
+
+            isProcessing = true; // 処理中フラグをセット
+
+            const shareUrlElement = document.querySelector('.share-url-textarea');
+            const shortenedUrlElement = document.querySelector('.shortened-url-textarea');
+            const shareUrl = shareUrlElement.value.trim(); // テキストエリアの値を取得
+
+            // URLが空の場合はエラーメッセージをアラート表示
+            if (!shareUrl) {
+                alert("共有用URLが設定されていません。");
+                setTimeout(() => {
+                isProcessing = false; 
+                }, 1000);
+                return;
+            }
+
+            try {
+                // tinyurl APIを呼び出してURLを短縮
+                const response = await fetch(`https://tinyurl.com/api-create.php?url=${encodeURIComponent(shareUrl)}`);
+                
+                if (response.ok) {
+                    const baseUrl = "https://tinyurl.com/";
+                    let shortUrl = await response.text();
+                    let shortPreviewUrl = baseUrl + "preview/" + shortUrl.slice(baseUrl.length);
+                    shortenedUrlElement.value = shortPreviewUrl;
+                    // クリップボードにコピー
+                    try {
+                        await navigator.clipboard.writeText(shortPreviewUrl);
+                        alert("URLを短縮してコピーしました");
+                    } catch (clipboardError) {
+                    // クリップボードコピーに失敗した場合
+                        alert(`短縮は完了しましたが、コピーに失敗しました。手動でコピーしてください。`);
+                    }
+                } else {
+                    throw new Error("URLの短縮に失敗しました。");
+                }
+
+            } catch (error) {
+                // エラーをアラート表示
+                alert(`エラー: ${error.message}`);
+            }finally {
+                // 処理完了後に1000ms待機してフラグを解除
+                setTimeout(() => {
+                isProcessing = false;
+                }, 1000);
+            }
+        });
+        
     });
-    updateUrl(); // URLも更新
-    };
-
-    document.getElementById("E.G.O-reset1").addEventListener("click", () => EGOreset(1));
-    document.getElementById("E.G.O-reset2").addEventListener("click", () => EGOreset(2));
-    document.getElementById("E.G.O-reset3").addEventListener("click", () => EGOreset(3));
-    document.getElementById("E.G.O-reset4").addEventListener("click", () => EGOreset(4));
-
-    function adjustTextareaHeight() {
-    const textarea = document.getElementById('shareUrl');
-    
-    // 高さを自動的にリセット
-    textarea.style.height = 'auto'; 
-    
-    // テキストエリアの内容に基づいて高さを調整
-    textarea.style.height = textarea.scrollHeight + 'px';
-    }
-
-    // ページのリサイズ時にも調整
-    window.addEventListener('resize', adjustTextareaHeight);
-
-    // URLセーフBase64エンコード関数
-    function toUrlSafeBase64(data) {
-      return btoa(data)
-      .replace(/\+/g, '-')
-      .replace(/\//g, '_')
-      .replace(/=+$/, ''); // 末尾の = を削除
-    }
-
-    // URLセーフBase64デコード関数
-    function fromUrlSafeBase64(data) {
-      data = data.replace(/-/g, '+').replace(/_/g, '/');
-      // パディングが不足している場合は補完
-      while (data.length % 4) {
-      data += '=';
-      }
-    return atob(data);
-    }
-    
-    // コピーボタンをクリックしたときの処理
-    document.getElementById('copyButton').addEventListener('click', async function () {
-      const textarea = document.getElementById('shareUrl');
-      const url = textarea.value; // テキストエリアの内容を取得
-      try {
-      // Clipboard APIを使用してクリップボードにコピー
-      await navigator.clipboard.writeText(url);
-      alert('共有用URLをコピーしました');
-      } catch (err) {
-      alert('コピーに失敗しました。');
-      }
-    });
-
-  });
-  </script>
-
+    </script>
 </body>
 </html>
