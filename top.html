@@ -145,7 +145,7 @@
                 // 画像要素を作成
                 const img = document.createElement('img');
                 img.dataset.id = startId + i;
-                img.src = `${baseImageUrl}imgState${defaultState}/limbus${id}.${defaultState}.jpg`;
+                img.src = `${baseImageUrl}imgState${defaultState}/limbus${container.dataset.id}.${defaultState}.jpg`;
                 img.alt = `${defaultState}`;
                 img.classList.add('img');
                 container.appendChild(img);
