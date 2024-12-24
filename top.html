@@ -64,6 +64,7 @@
         <summary>共有された側に向けてのオプション(この行をクリックして開閉)</summary>
         <br>
         <input type="checkbox" id="none-alt0">未所持を表示しない
+        <input type="checkbox" id="flex-alt0">未所持のみ表示する<br>
         <input type="checkbox" id="none-id1">初期人格E.G.Oを表示しない<br><br>
         <form>
             それぞれの囚人ごとに<br>
@@ -734,48 +735,63 @@
             });
         }
         
+
         const altZeroCheckbox = document.getElementById('none-alt0');
+        const altFlexCheckbox = document.getElementById('flex-alt0');
         const specificIdCheckbox = document.getElementById('none-id1');
 
+        function handleCheckboxChange(changedCheckbox, otherCheckbox) {
+            if (changedCheckbox.checked) {
+                otherCheckbox.checked = false; // もう一方のチェックボックスをオフ
+            }
+            changeCheckbox();
+        }
+
         function changeCheckbox() {
-            // すべてのコンテナを最初に表示状態に戻す
             document.querySelectorAll('.container').forEach(container => {
                 container.style.display = 'flex';
             });
 
-            // 条件に応じて非表示
-            if (altZeroCheckbox.checked && specificIdCheckbox.checked) {
+            const toggleDisplay = (condition) => {
                 document.querySelectorAll('.container .img').forEach(img => {
-                    const container = img.closest('.container');
-                    if (parseInt(img.alt, 10) === 0) {
-                        container.style.display = 'none';
-                    }
-                    const id = parseInt(img.dataset.id, 10);
-                    if (id % 1000 === 1 && id >= 1001 && id <= 24001) {
-                        container.style.display = 'none';
-                    }
+                const container = img.closest('.container');
+                const id = parseInt(img.dataset.id, 10);
+                const alt = parseInt(img.alt, 10);
+                if (condition(alt, id)) {
+                    container.style.display = 'none';
+                }
                 });
-            } else if (altZeroCheckbox.checked) {
-                document.querySelectorAll('.container .img').forEach(img => {
-                    const container = img.closest('.container');
-                    if (parseInt(img.alt, 10) === 0) {
-                        container.style.display = 'none';
-                    }
+            };
+            if (altZeroCheckbox.checked && altFlexCheckbox.checked) {
+            document.querySelectorAll('.container').forEach(container => {
+                container.style.display = 'none';
                 });
-            } else if (specificIdCheckbox.checked) {
-                document.querySelectorAll('.container .img').forEach(img => {
-                    const container = img.closest('.container');
-                    const id = parseInt(img.dataset.id, 10);
-                    if (id % 1000 === 1 && id >= 1001 && id <= 24001) {
-                        container.style.display = 'none';
-                    }
-                });
+                 return;
+            } // handleCheckboxChangeにより起動しないはずだけど一応残す
+            if (altZeroCheckbox.checked) {
+                toggleDisplay((alt, id) =>
+                    specificIdCheckbox.checked
+                        ? alt === 0 || (id % 1000 === 1 && id >= 1001 && id <= 24001)
+                        : alt === 0
+                    );
+                return;
+            }
+            if (altFlexCheckbox.checked) {
+                toggleDisplay((alt, id) =>
+                    specificIdCheckbox.checked
+                        ? alt !== 0 || (id % 1000 === 1 && id >= 1001 && id <= 24001)
+                        : alt !== 0
+                    );
+                return;
+            }
+            if (specificIdCheckbox.checked) {
+                toggleDisplay((_, id) => id % 1000 === 1 && id >= 1001 && id <= 24001);
             }
         }
 
-        altZeroCheckbox.addEventListener('change', changeCheckbox);
+        altZeroCheckbox.addEventListener('change', () => handleCheckboxChange(altZeroCheckbox, altFlexCheckbox));
+        altFlexCheckbox.addEventListener('change', () => handleCheckboxChange(altFlexCheckbox, altZeroCheckbox));
         specificIdCheckbox.addEventListener('change', changeCheckbox);
-        
 
         function sortContainers(groupId, sortBy = 'data-id', order = 'desc') {
             const sharelistGroup = document.getElementById(groupId);
