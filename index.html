@@ -63,7 +63,8 @@
     <details>
         <summary>共有された側のオプション(この行をクリックして開閉)</summary>
         <br>
-        <input type="checkbox" id="none-alt0">未所持を表示しない<br><br>
+        <input type="checkbox" id="none-alt0">未所持を表示しない
+        <input type="checkbox" id="none-id1">初期人格E.G.Oを表示しない<br><br>
         <form>
             それぞれの囚人ごとに<br>
             <input type="radio" name="sort" value="option1"> 同期,解析段階優先でソート<br>
@@ -734,25 +735,47 @@
         }
         
 
-        const checkbox = document.getElementById('none-alt0');
-        const radioButtons = document.querySelectorAll('input[name="sort"]');
+        const altZeroCheckbox = document.getElementById('none-alt0');
+        const specificIdCheckbox = document.getElementById('none-id1');
 
-        // チェックボックスのON/OFFに応じて動作を変更
-        checkbox.addEventListener('change', function() {
-            if (checkbox.checked) {
-                // imgのaltが0のコンテナを非表示
+        function changeCheckbox() {
+            // すべてのコンテナを最初に表示状態に戻す
+            document.querySelectorAll('.container').forEach(container => {
+                container.style.display = 'flex';
+            });
+
+            // 条件に応じて非表示
+            if (altZeroCheckbox.checked && specificIdCheckbox.checked) {
                 document.querySelectorAll('.container .img').forEach(img => {
-                const container = img.closest('.container');
-                if (parseInt(img.alt, 10) === 0) {
-                    container.style.display = 'none';
-                }
+                    const container = img.closest('.container');
+                    if (parseInt(img.alt, 10) === 0) {
+                        container.style.display = 'none';
+                    }
+                    const id = parseInt(img.dataset.id, 10);
+                    if (id % 1000 === 1 && id >= 1001 && id <= 24001) {
+                        container.style.display = 'none';
+                    }
                 });
-            } else {
-                document.querySelectorAll('.container').forEach(container => {
-                    container.style.display = 'flex';
+            } else if (altZeroCheckbox.checked) {
+                document.querySelectorAll('.container .img').forEach(img => {
+                    const container = img.closest('.container');
+                    if (parseInt(img.alt, 10) === 0) {
+                        container.style.display = 'none';
+                    }
+                });
+            } else if (specificIdCheckbox.checked) {
+                document.querySelectorAll('.container .img').forEach(img => {
+                    const container = img.closest('.container');
+                    const id = parseInt(img.dataset.id, 10);
+                    if (id % 1000 === 1 && id >= 1001 && id <= 24001) {
+                        container.style.display = 'none';
+                    }
                 });
             }
-        });
+        }
+
+        altZeroCheckbox.addEventListener('change', changeCheckbox);
+        specificIdCheckbox.addEventListener('change', changeCheckbox);
 
         function sortContainers(groupId, sortBy = 'data-id', order = 'desc') {
             const sharelistGroup = document.getElementById(groupId);
@@ -798,6 +821,8 @@
             // 並べ替え後の要素を再配置
             containers.forEach(container => sharelistGroup.appendChild(container));
         }
+
+        const radioButtons = document.querySelectorAll('input[name="sort"]');
 
         // ラジオボタンが選択された時に実行される処理
         document.querySelectorAll('input[name="sort"]').forEach((radio) => {
