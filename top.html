@@ -61,7 +61,7 @@
         実装順に並んでいます。<br>
         一番下に共有用URLが表示されます。</p>
     <details>
-        <summary>共有された側のオプション(この行をクリックして開閉)</summary>
+        <summary>共有された側に向けてのオプション(この行をクリックして開閉)</summary>
         <br>
         <input type="checkbox" id="none-alt0">未所持を表示しない
         <input type="checkbox" id="none-id1">初期人格E.G.Oを表示しない<br><br>
@@ -306,8 +306,8 @@
             // ラジオボタンが選択されている場合、メッセージを表示して処理を停止
             const selectedRadio = document.querySelector('input[name="sort"]:checked');
             if (selectedRadio) {
-                document.querySelector('.share-url-textarea').value = "ソート中は共有用URLを生成できません。上のオプションの中の「並びを初期化する」ボタンを押してください";
-                document.querySelector('.shortened-url-textarea').value = "ソート中は共有用URLを生成できません。上のオプションの中の「並びを初期化する」ボタンを押してください";
+                document.querySelector('.share-url-textarea').value = "ソート中は共有用URLを生成できません。上のオプションの中の「並びを初期化する」ボタンを押してください。";
+                document.querySelector('.shortened-url-textarea').value = "ソート中は共有用URLを生成できません。上のオプションの中の「並びを初期化する」ボタンを押してください。";
                 return; // URL生成処理を中止
             }
             
