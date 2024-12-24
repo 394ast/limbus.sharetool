@@ -15,6 +15,11 @@
             display: flex;
             flex-wrap: wrap;
         }
+        
+        .global-group{
+            display: none;
+            flex-wrap: wrap;
+        }
 
         .container {
             display: flex;
@@ -42,6 +47,10 @@
             resize:none;
         }
 
+        input[type="radio"] {
+            margin-left: 20px; 
+        }
+
     </style>
 </head>
 
@@ -51,6 +60,21 @@
         人格は同期化段階に合わせて画像も変わります。<br>
         実装順に並んでいます。<br>
         一番下に共有用URLが表示されます。</p>
+    <details>
+        <summary>共有された側のオプション(この行をクリックして開閉)</summary>
+        <br>
+        <input type="checkbox" id="none-alt0">未所持を表示しない<br><br>
+        <form>
+            それぞれの囚人ごとに<br>
+            <input type="radio" name="sort" value="option1"> 同期,解析段階優先でソート<br>
+            <input type="radio" name="sort" value="option2"> レベル優先でソート<br>
+            すべての囚人を<br>
+            <input type="radio" name="sort" value="option3"> 同期,解析段階優先でソート<br>
+            <input type="radio" name="sort" value="option4"> レベル優先でソート<br>
+        </form>
+            <button id="sort-reset">並びを初期化する</button>
+    </details>
+    <br>
     <input type="checkbox" id="enableLv"> Lv共有機能を有効にする（未所持の人格のLvは共有できません）
     <p><button id="reset0">初期人格E.G.Oのみ所持</button></p>
     <div id="buttons-container">
@@ -76,6 +100,7 @@
     <div class="sharelist-group" id="sharelist-group10"></div>
     <div class="sharelist-group" id="sharelist-group11"></div>
     <div class="sharelist-group" id="sharelist-group12"></div>
+    <div class="global-group" id="Identity-group"></div>
     <br>
     <div class="sharelist-group" id="sharelist-group13"></div>
     <div class="sharelist-group" id="sharelist-group14"></div>
@@ -89,6 +114,7 @@
     <div class="sharelist-group" id="sharelist-group22"></div>
     <div class="sharelist-group" id="sharelist-group23"></div>
     <div class="sharelist-group" id="sharelist-group24"></div>
+    <div class="global-group" id="EGO-group"></div>
     <br>
     <p>共有用URL: <textarea class="share-url-textarea" readonly></textarea></p>
     <button id="copyButton">共有用URLをコピー</button>
@@ -221,6 +247,23 @@
             restorelv(decompressedlv);
         }
 
+        // グローバルグループを生成
+        const identityGroup = document.getElementById('Identity-group');
+        const egoGroup = document.getElementById('EGO-group');
+
+        groupsData.forEach(({ sharelistId }) => {
+            const sharelistGroup = document.getElementById(sharelistId);
+            if (sharelistGroup) {
+                const groupNumber = parseInt(sharelistId.replace('sharelist-group', ''), 10); // IDから番号取得
+                const targetGroup = groupNumber <= 12 ? identityGroup : egoGroup; // 振り分け先を決定
+
+                // 各sharelist-group内のコンテナを対象グローバルグループに追加
+                Array.from(sharelistGroup.getElementsByClassName('container')).forEach(container => {
+                    targetGroup.appendChild(container.cloneNode(true)); // コピーして追加
+                });
+            }
+        });
+
         // ページが読み込まれたときにもURLを更新
         updateUrl();
 
@@ -239,17 +282,19 @@
             img.src = `${baseImageUrl}imgState${currentState}/limbus${id}.${currentState}.jpg`;
             img.alt = currentState; // 新しい状態をalt属性に設定
 
+            syncBetweenGroups(img); //個別グローバル同期
             updateUrl(); // URLを更新
             });
         });
 
-        //レベル変更時の処理
+        //レベル変更時の処理（スピンボタンの遅延）
         let debounceTimeout;
 
         document.querySelectorAll('.lvinput').forEach(lvInput => {
             lvInput.addEventListener('input', (event) => {
                 clearTimeout(debounceTimeout); // 既存のタイマーをクリア
                 debounceTimeout = setTimeout(() => {
+                    syncBetweenGroups(lvInput); //個別グローバル同期
                     updateUrl(); // 一定時間後に呼び出し
                 }, 500); // 500ミリ秒後に呼び出し（適宜調整可能）
             });
@@ -257,6 +302,14 @@
 
         //URL更新関数
         function updateUrl() {
+            // ラジオボタンが選択されている場合、メッセージを表示して処理を停止
+            const selectedRadio = document.querySelector('input[name="sort"]:checked');
+            if (selectedRadio) {
+                document.querySelector('.share-url-textarea').value = "ソート中は共有用URLを生成できません。上のオプションの中の「並びを初期化する」ボタンを押してください";
+                document.querySelector('.shortened-url-textarea').value = "ソート中は共有用URLを生成できません。上のオプションの中の「並びを初期化する」ボタンを押してください";
+                return; // URL生成処理を中止
+            }
+            
             const enableLv = document.getElementById("enableLv").checked;
             const baseUrl = "https://394ast.github.io/limbus.sharetool/";
             const compressedImgData = compressImgData();
@@ -329,8 +382,8 @@
         }
 
         function compresslvData() {
-            // lvInput要素をすべて取得
-            const lvInputs = document.querySelectorAll('.lvinput');
+            // sharelist-groupクラス内のlvInput要素を取得
+            const lvInputs = document.querySelectorAll('.sharelist-group .lvinput');
             const lvValues = [];
             lvInputs.forEach(lvInput => {
                 const id = lvInput.dataset.id;
@@ -613,6 +666,182 @@
                 isProcessing = false;
                 }, 1000);
             }
+        });
+
+    
+        //  個別グローバルの同期処理  
+        function syncBetweenGroups(changedElement) {
+            const container = changedElement.closest('.container'); // 親コンテナを特定
+            if (!container) return;
+
+            const containerId = container.dataset.id; // コンテナのIDを取得
+            const parentGroup = container.closest('.sharelist-group, .global-group'); // 親グループを特定
+
+            if (!parentGroup) return;
+
+            if (parentGroup.classList.contains('sharelist-group')) {
+                // sharelist-group に変更があった場合、global-group に同期
+                const targetGroup = Math.floor(containerId / 1000) <= 12 ? identityGroup : egoGroup;
+                const targetContainer = targetGroup.querySelector(`.container[data-id="${containerId}"]`);
+                if (targetContainer) {
+                    syncContainerContents(container, targetContainer);
+                }
+            } else if (parentGroup.classList.contains('global-group')) {
+                // global-group に変更があった場合、sharelist-group に同期
+                const groupNumber = Math.floor(containerId / 1000);
+                const targetGroupId = `sharelist-group${groupNumber}`;
+                const targetGroup = document.getElementById(targetGroupId);
+                const targetContainer = targetGroup?.querySelector(`.container[data-id="${containerId}"]`);
+                if (targetContainer) {
+                    syncContainerContents(container, targetContainer);
+                }
+            }
+        }
+
+        function syncContainerContents(sourceContainer, targetContainer) {
+            // 画像情報を同期
+            const sourceImg = sourceContainer.querySelector('img');
+            const targetImg = targetContainer.querySelector('img');
+            if (sourceImg && targetImg) {
+                targetImg.src = sourceImg.src;
+                targetImg.alt = sourceImg.alt;
+            }
+
+            // レベル情報を同期
+            const sourceLvInput = sourceContainer.querySelector('.lvinput');
+            const targetLvInput = targetContainer.querySelector('.lvinput');
+            if (sourceLvInput && targetLvInput) {
+                targetLvInput.value = sourceLvInput.value;
+            }
+        }
+
+        function showGlobalGroup() {
+            document.querySelectorAll('.sharelist-group').forEach(group => {
+                group.style.display = 'none';
+            });
+            document.querySelectorAll('.global-group').forEach(group => {
+                group.style.display = 'flex';
+            });
+        }
+
+        function showSharelistGroup() {
+            document.querySelectorAll('.sharelist-group').forEach(group => {
+                group.style.display = 'flex';
+            });
+            document.querySelectorAll('.global-group').forEach(group => {
+                group.style.display = 'none';
+            });
+        }
+        
+
+        const checkbox = document.getElementById('none-alt0');
+        const radioButtons = document.querySelectorAll('input[name="sort"]');
+
+        // チェックボックスのON/OFFに応じて動作を変更
+        checkbox.addEventListener('change', function() {
+            if (checkbox.checked) {
+                // imgのaltが0のコンテナを非表示
+                document.querySelectorAll('.container .img').forEach(img => {
+                const container = img.closest('.container');
+                if (parseInt(img.alt, 10) === 0) {
+                    container.style.display = 'none';
+                }
+                });
+            } else {
+                document.querySelectorAll('.container').forEach(container => {
+                    container.style.display = 'flex';
+                });
+            }
+        });
+
+        function sortContainers(groupId, sortBy = 'data-id', order = 'desc') {
+            const sharelistGroup = document.getElementById(groupId);
+            if (!sharelistGroup) return;
+
+            // 子要素（container）のリストを取得
+            const containers = Array.from(sharelistGroup.getElementsByClassName('container'));
+
+            // 並べ替え条件に基づいてソート
+            containers.sort((a, b) => {
+                let valueA, valueB;
+
+                // 並べ替え基準に応じて値を取得
+                if (sortBy === 'data-id') {
+                    valueA = parseInt(a.dataset.id);
+                    valueB = parseInt(b.dataset.id);
+                } else if (sortBy === 'img.alt') {
+                    valueA = a.querySelector('img')?.alt || '';
+                    valueB = b.querySelector('img')?.alt || '';
+                    if (valueA === valueB) {
+                        valueA = parseInt(a.querySelector('.lvinput')?.value || 0);
+                        valueB = parseInt(b.querySelector('.lvinput')?.value || 0);
+                    }
+                } else if (sortBy === 'lvInput') {
+                    valueA = parseInt(a.querySelector('.lvinput')?.value || 0);
+                    valueB = parseInt(b.querySelector('.lvinput')?.value || 0);
+                    if (valueA === valueB) {
+                        valueA = a.querySelector('img')?.alt || '';
+                        valueB = b.querySelector('img')?.alt || '';
+                    }
+                } else {
+                    return 0; // 不正なsortByが指定された場合、並び替えを行わない
+                }
+
+                // ソート順序に基づいて比較
+                if (order === 'asc') {
+                    return valueA > valueB ? 1 : valueA < valueB ? -1 : 0;
+                } else {
+                    return valueA < valueB ? 1 : valueA > valueB ? -1 : 0;
+                }
+            });
+
+            // 並べ替え後の要素を再配置
+            containers.forEach(container => sharelistGroup.appendChild(container));
+        }
+
+        // ラジオボタンが選択された時に実行される処理
+        document.querySelectorAll('input[name="sort"]').forEach((radio) => {
+            radio.addEventListener('change', (event) => {
+                const value = event.target.value;
+
+                // それぞれのグループに対して処理を適用
+                if (value === 'option1' || value === 'option2') {
+                    // 「それぞれの囚人ごとに」のグループに対して
+                    showSharelistGroup();
+                    document.querySelectorAll('.sharelist-group').forEach(group => {
+                        if (value === 'option1') {
+                            sortContainers(group.id, 'img.alt');
+                        } else if (value === 'option2') {
+                            sortContainers(group.id, 'lvInput');
+                        }
+                    });
+                } else if (value === 'option3' || value === 'option4') {
+                    // 「すべての囚人を」のグループに対して
+                    showGlobalGroup();
+                    document.querySelectorAll('.global-group').forEach(group => {
+                        if (value === 'option3') {
+                            sortContainers(group.id, 'img.alt');
+                        } else if (value === 'option4') {
+                            sortContainers(group.id, 'lvInput');
+                        }
+                    });
+                }
+                updateUrl();
+            });
+        });
+
+        // 並びを初期化ボタンの処理
+        document.getElementById('sort-reset').addEventListener('click', () => {
+            const radios = document.querySelectorAll('input[name="sort"]');
+            radios.forEach(radio => radio.checked = false);
+            document.querySelectorAll('.sharelist-group').forEach(group => {
+                sortContainers(group.id, 'data-id', 'asc');
+            });
+            document.querySelectorAll('.global-group').forEach(group => {
+                sortContainers(group.id, 'data-id', 'asc');
+            });
+            showSharelistGroup();
+            updateUrl();
         });
         
     });
