@@ -51,6 +51,10 @@
             margin-left: 20px; 
         }
 
+        #blink-sort-reset {
+            display: none;
+        }
+
     </style>
 </head>
 
@@ -119,6 +123,7 @@
     <div class="global-group" id="EGO-group"></div>
     <br>
     <p>共有用URL: <textarea class="share-url-textarea" readonly></textarea></p>
+    <button id="blink-sort-reset">並びを初期化する</button>
     <button id="copyButton">共有用URLをコピー</button>
     <br>
     <br>
@@ -178,7 +183,7 @@
                 img.classList.add('img');
                 container.appendChild(img);
 
-                // Lvの入力フィールド（条件付きで追加）
+                // Lvの入力フィールド(条件付きで追加)
                 if (startId + i < 13000) {
                     const lvContainer = document.createElement('div');
                     lvContainer.classList.add('lv-container');
@@ -307,8 +312,8 @@
             // ラジオボタンが選択されている場合、メッセージを表示して処理を停止
             const selectedRadio = document.querySelector('input[name="sort"]:checked');
             if (selectedRadio) {
-                document.querySelector('.share-url-textarea').value = "ソート中は共有用URLを生成できません。上のオプションの中の「並びを初期化する」ボタンを押してください。";
-                document.querySelector('.shortened-url-textarea').value = "ソート中は共有用URLを生成できません。上のオプションの中の「並びを初期化する」ボタンを押してください。";
+                document.querySelector('.share-url-textarea').value = "ソート中は共有用URLを生成できません。「並びを初期化する」ボタンを押してください。";
+                document.querySelector('.shortened-url-textarea').value = "ソート中は共有用URLを生成できません。「並びを初期化する」ボタンを押してください。";
                 return; // URL生成処理を中止
             }
             
@@ -867,12 +872,13 @@
                         }
                     });
                 }
+                document.getElementById('blink-sort-reset').style.display = 'block'; // 下の方にリセットボタンを表示
                 updateUrl();
             });
         });
 
-        // 並びを初期化ボタンの処理
-        document.getElementById('sort-reset').addEventListener('click', () => {
+        // 並びを初期化する関数
+        function resetSorting() {
             const radios = document.querySelectorAll('input[name="sort"]');
             radios.forEach(radio => radio.checked = false);
             document.querySelectorAll('.sharelist-group').forEach(group => {
@@ -882,9 +888,13 @@
                 sortContainers(group.id, 'data-id', 'asc');
             });
             showSharelistGroup();
+            document.getElementById('blink-sort-reset').style.display = 'none';
             updateUrl();
-        });
-        
+        }
+
+        document.getElementById('sort-reset').addEventListener('click', resetSorting);
+        document.getElementById('blink-sort-reset').addEventListener('click', resetSorting);
+
     });
     </script>
 </body>
