@@ -72,6 +72,24 @@
         人格は同期化段階に合わせて画像も変わります。<br>
         実装順に並んでいます。<br>
         一番下に共有用URLが表示されます。</p>
+    ・共有する側に向けてのオプション<br>
+    <input type="checkbox" id="enableLv"> Lv共有機能を有効にする（未所持の人格のLvは共有できません）<br>
+    <input type="checkbox" id="enableReset"> 一括変更ボタンを表示する
+    <span class="reset"><br>全囚人を一括で変更する:</span>
+    <button class="reset" id="reset0-1">初期人格E.G.Oのみ同期/解析1で所持</button>
+    <button class="reset" id="reset0-2">初期人格E.G.Oのみ同期/解析2で所持</button>
+    <button class="reset" id="reset0-3">初期人格E.G.Oのみ同期/解析3で所持</button><br>
+    <div id="buttons-container">
+        <button class="reset" id="Identity-reset1">人格を全て同期1に</button>
+        <button class="reset" id="E.G.O-reset1">E.G.Oを全て解析1に</button>
+        <button class="reset" id="Identity-reset2">人格を全て同期2に</button>
+        <button class="reset" id="E.G.O-reset2">E.G.Oを全て解析2に</button>
+        <button class="reset" id="Identity-reset3">人格を全て同期3に</button>
+        <button class="reset" id="E.G.O-reset3">E.G.Oを全て解析3に</button>
+        <button class="reset" id="Identity-reset4">人格を全て同期4に</button>
+        <button class="reset" id="E.G.O-reset4">E.G.Oを全て解析4に</button>
+        <br>
+    </div>
     <details>
         <summary>共有された側に向けてのオプション(この行をクリックして開閉)</summary>
         <br>
@@ -88,23 +106,6 @@
         </form>
             <button id="sort-reset">並びを初期化する</button>
     </details>
-    <br>
-    <input type="checkbox" id="enableLv"> Lv共有機能を有効にする（未所持の人格のLvは共有できません）<br><br>
-    <input type="checkbox" id="enableReset"> 一括変更ボタンを表示する<br>
-    <span class="reset"><br>全囚人を一括で変更する:</span>
-    <button class="reset" id="reset0-1">初期人格E.G.Oのみ同期/解析1で所持</button>
-    <button class="reset" id="reset0-2">初期人格E.G.Oのみ同期/解析2で所持</button>
-    <button class="reset" id="reset0-3">初期人格E.G.Oのみ同期/解析3で所持</button><br>
-    <div id="buttons-container">
-        <button class="reset" id="Identity-reset1">人格を全て同期1に</button>
-        <button class="reset" id="E.G.O-reset1">E.G.Oを全て解析1に</button>
-        <button class="reset" id="Identity-reset2">人格を全て同期2に</button>
-        <button class="reset" id="E.G.O-reset2">E.G.Oを全て解析2に</button>
-        <button class="reset" id="Identity-reset3">人格を全て同期3に</button>
-        <button class="reset" id="E.G.O-reset3">E.G.Oを全て解析3に</button>
-        <button class="reset" id="Identity-reset4">人格を全て同期4に</button>
-        <button class="reset" id="E.G.O-reset4">E.G.Oを全て解析4に</button>
-    </div>
     <br>
     <div class="sharelist-group" id="sharelist-group1"></div>
     <div class="reset" id ="resetButton1"></div>
