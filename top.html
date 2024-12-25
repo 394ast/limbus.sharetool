@@ -55,6 +55,10 @@
             display: none;
         }
 
+        .reset {
+            display: none;
+        }
+
     </style>
 </head>
 
@@ -81,45 +85,73 @@
             <button id="sort-reset">並びを初期化する</button>
     </details>
     <br>
-    <input type="checkbox" id="enableLv"> Lv共有機能を有効にする（未所持の人格のLvは共有できません）
-    <p><button id="reset0">初期人格E.G.Oのみ所持</button></p>
+    <input type="checkbox" id="enableLv"> Lv共有機能を有効にする（未所持の人格のLvは共有できません）<br><br>
+    <input type="checkbox" id="enableReset"> 一括変更ボタンを表示する<br>
+    <span class="reset"><br>全囚人を一括で変更する:</span>
+    <button class="reset" id="reset0-1">初期人格E.G.Oのみ同期/解析1で所持</button>
+    <button class="reset" id="reset0-2">初期人格E.G.Oのみ同期/解析2で所持</button>
+    <button class="reset" id="reset0-3">初期人格E.G.Oのみ同期/解析3で所持</button><br>
     <div id="buttons-container">
-        <button id="Identity-reset1">人格を全て同期1に</button>
-        <button id="E.G.O-reset1">E.G.Oを全て解析1に</button>
-        <button id="Identity-reset2">人格を全て同期2に</button>
-        <button id="E.G.O-reset2">E.G.Oを全て解析2に</button>
-        <button id="Identity-reset3">人格を全て同期3に</button>
-        <button id="E.G.O-reset3">E.G.Oを全て解析3に</button>
-        <button id="Identity-reset4">人格を全て同期4に</button>
-        <button id="E.G.O-reset4">E.G.Oを全て解析4に</button>
+        <button class="reset" id="Identity-reset1">人格を全て同期1に</button>
+        <button class="reset" id="E.G.O-reset1">E.G.Oを全て解析1に</button>
+        <button class="reset" id="Identity-reset2">人格を全て同期2に</button>
+        <button class="reset" id="E.G.O-reset2">E.G.Oを全て解析2に</button>
+        <button class="reset" id="Identity-reset3">人格を全て同期3に</button>
+        <button class="reset" id="E.G.O-reset3">E.G.Oを全て解析3に</button>
+        <button class="reset" id="Identity-reset4">人格を全て同期4に</button>
+        <button class="reset" id="E.G.O-reset4">E.G.Oを全て解析4に</button>
     </div>
     <br>
     <div class="sharelist-group" id="sharelist-group1"></div>
+    <div class="reset" id ="resetButton1"></div>
     <div class="sharelist-group" id="sharelist-group2"></div>
+    <div class="reset" id ="resetButton2"></div>
     <div class="sharelist-group" id="sharelist-group3"></div>
+    <div class="reset" id ="resetButton3"></div>
     <div class="sharelist-group" id="sharelist-group4"></div>
+    <div class="reset" id ="resetButton4"></div>
     <div class="sharelist-group" id="sharelist-group5"></div>
+    <div class="reset" id ="resetButton5"></div>
     <div class="sharelist-group" id="sharelist-group6"></div>
+    <div class="reset" id ="resetButton6"></div>
     <div class="sharelist-group" id="sharelist-group7"></div>
+    <div class="reset" id ="resetButton7"></div>
     <div class="sharelist-group" id="sharelist-group8"></div>
+    <div class="reset" id ="resetButton8"></div>
     <div class="sharelist-group" id="sharelist-group9"></div>
+    <div class="reset" id ="resetButton9"></div>
     <div class="sharelist-group" id="sharelist-group10"></div>
+    <div class="reset" id ="resetButton10"></div>
     <div class="sharelist-group" id="sharelist-group11"></div>
+    <div class="reset" id ="resetButton11"></div>
     <div class="sharelist-group" id="sharelist-group12"></div>
+    <div class="reset" id ="resetButton12"></div>
     <div class="global-group" id="Identity-group"></div>
     <br>
     <div class="sharelist-group" id="sharelist-group13"></div>
+    <div class="reset" id ="resetButton13"></div>
     <div class="sharelist-group" id="sharelist-group14"></div>
+    <div class="reset" id ="resetButton14"></div>
     <div class="sharelist-group" id="sharelist-group15"></div>
+    <div class="reset" id ="resetButton15"></div>
     <div class="sharelist-group" id="sharelist-group16"></div>
+    <div class="reset" id ="resetButton16"></div>
     <div class="sharelist-group" id="sharelist-group17"></div>
+    <div class="reset" id ="resetButton17"></div>
     <div class="sharelist-group" id="sharelist-group18"></div>
+    <div class="reset" id ="resetButton18"></div>
     <div class="sharelist-group" id="sharelist-group19"></div>
+    <div class="reset" id ="resetButton19"></div>
     <div class="sharelist-group" id="sharelist-group20"></div>
+    <div class="reset" id ="resetButton20"></div>
     <div class="sharelist-group" id="sharelist-group21"></div>
+    <div class="reset" id ="resetButton21"></div>
     <div class="sharelist-group" id="sharelist-group22"></div>
+    <div class="reset" id ="resetButton22"></div>
     <div class="sharelist-group" id="sharelist-group23"></div>
+    <div class="reset" id ="resetButton23"></div>
     <div class="sharelist-group" id="sharelist-group24"></div>
+    <div class="reset" id ="resetButton24"></div>
     <div class="global-group" id="EGO-group"></div>
     <br>
     <p>共有用URL: <textarea class="share-url-textarea" readonly></textarea></p>
@@ -224,6 +256,36 @@
 
                 // sharelistGroupに追加
                 sharelistGroup.appendChild(container);
+            }
+        });
+
+        const groupNames = [
+        '　　　イサン', '　ファウスト', 'ドンキホーテ', '　　　　良秀', '　　ムルソー', '　　　ホンル', 
+        'ヒースクリフ', 'イシュメール', '　　ロージャ', '　シンクレア', '　ウーティス', '　グレゴール', 
+        '　　　イサン', '　ファウスト', 'ドンキホーテ', '　　　　良秀', '　　ムルソー', '　　　ホンル', 
+        'ヒースクリフ', 'イシュメール', '　　ロージャ', '　シンクレア', '　ウーティス', '　グレゴール',
+        ];
+
+        // グループごとのリセットボタンを生成
+        groupNames.forEach((groupName, index) => {
+        const resetDiv = document.getElementById(`resetButton${index + 1}`);
+    
+            if (resetDiv) {
+                const span = document.createElement('span');
+                span.textContent = groupName + ':';
+                resetDiv.appendChild(span);
+
+                for (let i = 0; i <= 4; i++) {
+                    const button = document.createElement('button');
+                    button.id = `reset${index + 1}-${i}`;
+            
+                if (index + 1 <= 12) {
+                    button.textContent = i === 0 ? '全て未所持' : `全て同期${i}`;
+                } else {
+                    button.textContent = i === 0 ? '全て未所持' : `全て解析${i}`;
+                }
+                resetDiv.appendChild(button);
+                }
             }
         });
 
@@ -519,57 +581,58 @@
             }
         }
 
-        //resetボタンの処理
-        document.getElementById('reset0').addEventListener('click', function() {
+        function resetPrimary(state, startId, endId) {
             const images = document.querySelectorAll('img');
             images.forEach(img => {
                 const id = parseInt(img.dataset.id, 10); 
-                if (id % 1000 === 1 && id >= 1001 && id <= 24001) {
-                // IDが1001, 2001, ..., 24001の規則に一致する場合
-                    img.src = `${baseImageUrl}imgState1/limbus${id}.1.jpg`;
-                    img.alt = 1;
-                } else {
-                // その他のIDは状態を0に変更
-                    img.src = `${baseImageUrl}imgState0/limbus${id}.0.jpg`;
-                    img.alt = 0;
+                if(id >= startId && id <= endId){
+                    if (id % 1000 === 1 ) {
+                        img.src = `${baseImageUrl}imgState${state}/limbus${id}.${state}.jpg`; 
+                        img.alt = state; 
+                    } else {
+                        img.src = `${baseImageUrl}imgState0/limbus${id}.0.jpg`;
+                        img.alt = 0;
+                    }
                 }
             });
             updateUrl();
-        });
+        }
 
-        const Identityreset = (stage) => {
+        function resetState(state, startId, endId){
             const images = document.querySelectorAll('img');
             images.forEach(img => {
-                const id = parseInt(img.dataset.id, 10);
-                if (id >= 1001 && id < 13000) {
-                    img.src = `${baseImageUrl}imgState${stage}/limbus${id}.${stage}.jpg`;
-                    img.alt = stage;
+                const id = parseInt(img.dataset.id, 10); 
+                if(id >= startId && id <= endId){
+                    img.src = `${baseImageUrl}imgState${state}/limbus${id}.${state}.jpg`; 
+                    img.alt = state; 
                 }
             });
             updateUrl();
-        };
+        }
+        
+        document.getElementById(`reset0-1`).addEventListener('click', () => resetPrimary(1,1001,25000));
+        document.getElementById(`reset0-2`).addEventListener('click', () => resetPrimary(2,1001,25000));
+        document.getElementById(`reset0-3`).addEventListener('click', () => resetPrimary(3,1001,25000));
+        document.getElementById("Identity-reset1").addEventListener("click", () => resetState(1,1001,13000));
+        document.getElementById("Identity-reset2").addEventListener("click", () => resetState(2,1001,13000));
+        document.getElementById("Identity-reset3").addEventListener("click", () => resetState(3,1001,13000));
+        document.getElementById("Identity-reset4").addEventListener("click", () => resetState(4,1001,13000));
+        document.getElementById("E.G.O-reset1").addEventListener("click", () => resetState(1,13001,25000));
+        document.getElementById("E.G.O-reset2").addEventListener("click", () => resetState(2,13001,25000));
+        document.getElementById("E.G.O-reset3").addEventListener("click", () => resetState(3,13001,25000));
+        document.getElementById("E.G.O-reset4").addEventListener("click", () => resetState(4,13001,25000));
 
-        document.getElementById("Identity-reset1").addEventListener("click", () => Identityreset(1));
-        document.getElementById("Identity-reset2").addEventListener("click", () => Identityreset(2));
-        document.getElementById("Identity-reset3").addEventListener("click", () => Identityreset(3));
-        document.getElementById("Identity-reset4").addEventListener("click", () => Identityreset(4));
-
-        const EGOreset = (stage) => {
-            const images = document.querySelectorAll('img');
-            images.forEach(img => {
-                const id = parseInt(img.dataset.id, 10);
-                if (id >= 13001 && id < 25000) {
-                    img.src = `${baseImageUrl}imgState${stage}/limbus${id}.${stage}.jpg`;  
-                    img.alt = stage;
+        for (let X = 1; X <= 24; X++) {  // グループ1〜24
+            for (let Y = 0; Y <= 4; Y++) {  // ボタン0〜4
+                const buttonId = `reset${X}-${Y}`;
+                const button = document.getElementById(buttonId);
+                if (button) {
+                    button.addEventListener('click', () => {
+                        resetState(Y, 1000 * X + 1, 1000 * (X + 1));
+                    });
                 }
-            });
-            updateUrl();
-        };
-
-        document.getElementById("E.G.O-reset1").addEventListener("click", () => EGOreset(1));
-        document.getElementById("E.G.O-reset2").addEventListener("click", () => EGOreset(2));
-        document.getElementById("E.G.O-reset3").addEventListener("click", () => EGOreset(3));
-        document.getElementById("E.G.O-reset4").addEventListener("click", () => EGOreset(4));
+            }
+        }
 
         // テキストエリアの調整関数
         function adjustTextareaHeight() {
@@ -894,6 +957,14 @@
 
         document.getElementById('sort-reset').addEventListener('click', resetSorting);
         document.getElementById('blink-sort-reset').addEventListener('click', resetSorting);
+
+        const enableResetCheckbox = document.getElementById('enableReset');
+        enableResetCheckbox.addEventListener('change', function () {
+            const resetButtons = document.querySelectorAll('.reset');
+            resetButtons.forEach(button => {
+                button.style.display = enableResetCheckbox.checked ? 'flex' : 'none';
+            });
+        });
 
     });
     </script>
