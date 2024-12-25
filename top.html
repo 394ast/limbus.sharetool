@@ -176,6 +176,7 @@
         const defaultState = 4; // 初期状態
         const maxState = 4; // 状態の最大値
         const defaultLv = 0; //未所持を想定
+        const maxLv = 50; //レベル上限解放時はここを書き換える
         const lvCheckbox = document.getElementById("enableLv");
         const groupsData = [
         { sharelistId: 'sharelist-group1', groupCount: 10, startId: 1001 },
@@ -231,7 +232,7 @@
                     lvInput.type = 'number';
                     lvInput.value = defaultLv;
                     lvInput.min = 0;
-                    lvInput.max = 50; //レベル上限解放時はここを変更、下の2か所も変更を忘れずに
+                    lvInput.max = maxLv;
                     lvInput.step = 1; //レベルは整数のみ
                     lvInput.dataset.id = startId + i;
                     lvInput.classList.add('lvinput');
@@ -249,10 +250,10 @@
                         }
                         if (value < 0) {
                             lvInput.value = 0;
-                        } else if (value > 50) {
-                            lvInput.value = 50;
+                        } else if (value > maxLv) {
+                            lvInput.value = maxLv;
                         }
-                    }); // 入力を制限、レベル上限解放時はここも変更、上の1か所も変更を忘れずに
+                    }); // 入力を制限
 
                     lvContainer.appendChild(lvText);
                     lvContainer.appendChild(lvInput);
