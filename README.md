@@ -5,4 +5,4 @@
 //新規人格E.G.O実装時の手引き
 //5種のimageStateにそれぞれjpgをアップロードする
 //groupSettingsのcountを書き換える//indexとtopの両方とも忘れずに書き換える
-//レベル上限更新時は3か所それぞれindexとtopを書き換える
+//レベル上限更新時はmaxLvを書き換える//indexとtopの両方とも忘れずに書き換える
