@@ -78,6 +78,10 @@
             height: 5px;
         }
 
+        #customWidth {
+            width: 40px;
+        }
+
     </style>
 </head>
 
@@ -87,11 +91,13 @@
         人格は同期化段階に合わせて画像も変わります。<br>
         実装順に並んでいます。<br>
         一番下に共有用URLが表示されます。</p>
-        画像サイズ:<form id="imgSizeForm">
+        画像サイズ:<div id="imgSizeForm">
             <input type="radio" name="imgSize" value="size1">小
             <input type="radio" name="imgSize" value="size2" checked>中
             <input type="radio" name="imgSize" value="size3">大
-            <input type="radio" name="imgSize" value="size4">特大</form><br>
+            <input type="radio" name="imgSize" value="size4">特大
+            <input type="radio" name="imgSize" value="custom">カスタム <input type="number" id="customWidth" disabled>px
+        </div><br>
     ・共有する側に向けてのオプション<br>
     <input type="checkbox" id="enableLv"> Lv共有機能を有効にする（未所持の人格のLvは共有できません）<br>
     <input type="checkbox" id="enableReset"> 一括変更ボタンを表示する
@@ -116,14 +122,14 @@
         <input type="checkbox" id="none-alt0">未所持を表示しない
         <input type="checkbox" id="flex-alt0">未所持のみ表示する<br>
         <input type="checkbox" id="none-id1">初期人格E.G.Oを表示しない<br><br>
-        <form>
+        <div>
             それぞれの囚人ごとに<br>
             <input type="radio" name="sort" value="option1"> 同期,解析段階優先でソート<br>
             <input type="radio" name="sort" value="option2"> レベル優先でソート<br>
             すべての囚人を<br>
             <input type="radio" name="sort" value="option3"> 同期,解析段階優先でソート<br>
             <input type="radio" name="sort" value="option4"> レベル優先でソート<br>
-        </form>
+        </div>
             <button id="sort-reset">並びを初期化する</button>
     </details>
     <br>
@@ -1027,41 +1033,51 @@
         document.getElementById('blink-sort-reset').addEventListener('click', resetSorting);
 
         const imgSizeForm = document.getElementById('imgSizeForm');
-        const sizeMap = {
-            size1: { width: '60px', height: '60px', containerWidth: '60px' },
-            size2: { width: '80px', height: '80px', containerWidth: '80px' },
-            size3: { width: '120px', height: '120px', containerWidth: '120px' },
-            size4: { width: '200px', height: '200px', containerWidth: '200px' },
-        };
+        const customWidthInput = document.getElementById('customWidth');
 
         imgSizeForm.addEventListener('change', (event) => {
-            const selectedSize = event.target.value;
-            const size = sizeMap[selectedSize];
-            if (size) {
-                const containers = document.querySelectorAll('.container');
-                const imgs = document.querySelectorAll('.img');
-                const lvTexts = document.querySelectorAll('.lvtext');
-
-                containers.forEach(container => {
-                    container.style.width = size.containerWidth;
-                });
-
-                imgs.forEach(img => {
-                    img.style.width = size.width;
-                    img.style.height = size.height; 
-                });
-
-                if (selectedSize === 'size1') {
-                    lvTexts.forEach(lvText => {
-                        lvText.style.display = 'none';
-                    });
+            if (event.target.type === 'radio') { // ラジオボタンのみ反応
+                const selectedSize = event.target.value;
+                if (selectedSize === 'custom') {
+                    const container = document.querySelector('.container');
+                    const currentWidth = container && container.style.width 
+                    ? parseInt(container.style.width) : 80; //デフォルト
+                    customWidthInput.value = currentWidth;
+                    customWidthInput.disabled = false;
+                    customWidthInput.focus();
                 } else {
-                    lvTexts.forEach(lvText => {
-                        lvText.style.display = 'flex';
-                    });
+                    customWidthInput.value = "";
+                    customWidthInput.disabled = true;
                 }
+                if (selectedSize === 'size1') applyCustomSize(60);
+                if (selectedSize === 'size2') applyCustomSize(80);
+                if (selectedSize === 'size3') applyCustomSize(120);
+                if (selectedSize === 'size4') applyCustomSize(200);
             }
         });
+
+        customWidthInput.addEventListener('input', () => {
+            let customWidth = parseInt(customWidthInput.value, 10);
+            customWidth = Math.max(20, Math.min(customWidth, 1000)); // 20～1000に制限
+            setTimeout(() => applyCustomSize(customWidth), 100); // 0.1秒遅延
+        });
+
+        function applyCustomSize(width) {
+            const containers = document.querySelectorAll('.container');
+            const imgs = document.querySelectorAll('.img');
+            const lvTexts = document.querySelectorAll('.lvtext');
+            const height = width; // 幅と高さを同じに設定
+            containers.forEach(container => {
+                container.style.width = `${width}px`;
+            });
+            imgs.forEach(img => {
+                img.style.width = `${width}px`;
+                img.style.height = `${height}px`;
+            });
+            lvTexts.forEach(lvText => {
+                lvText.style.display = width < 80 ? 'none' : 'flex';
+            });
+        }
 
     });
     </script>
