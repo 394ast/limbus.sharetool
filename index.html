@@ -25,16 +25,26 @@
             display: flex;
             flex-direction: column;
             width: 80px; /* コンテナの幅を指定 */
+            transition: width 0.3s;
         }
 
-        .img{
+
+        .img {
             width: 80px;
             height: 80px;
+            transition: width 0.3s, height 0.3s;
+            cursor: pointer;
+        }
+
+        button,summary,input[type="checkbox"],input[type="radio"] {
             cursor: pointer;
         }
 
         .lv-container {
             display: none;
+            justify-content: center;
+            align-items: center; 
+            margin : 3px 0;
             gap: 8px; /* テキストと入力フィールドの間にスペース */
         }
 
@@ -57,10 +67,15 @@
 
         .reset {
             display: none;
+            margin : 5px 0;
         }
 
         span {
         white-space: pre;
+        }
+
+        .custom-space {
+            height: 5px;
         }
 
     </style>
@@ -72,6 +87,11 @@
         人格は同期化段階に合わせて画像も変わります。<br>
         実装順に並んでいます。<br>
         一番下に共有用URLが表示されます。</p>
+        画像サイズ:<form id="imgSizeForm">
+            <input type="radio" name="imgSize" value="size1">小
+            <input type="radio" name="imgSize" value="size2" checked>中
+            <input type="radio" name="imgSize" value="size3">大
+            <input type="radio" name="imgSize" value="size4">特大</form><br>
     ・共有する側に向けてのオプション<br>
     <input type="checkbox" id="enableLv"> Lv共有機能を有効にする（未所持の人格のLvは共有できません）<br>
     <input type="checkbox" id="enableReset"> 一括変更ボタンを表示する
@@ -108,54 +128,78 @@
     </details>
     <br>
     <div class="sharelist-group" id="sharelist-group1"></div>
+    <div class="custom-space"></div>
     <div class="reset" id ="resetButton1"></div>
     <div class="sharelist-group" id="sharelist-group2"></div>
+    <div class="custom-space"></div>
     <div class="reset" id ="resetButton2"></div>
     <div class="sharelist-group" id="sharelist-group3"></div>
+    <div class="custom-space"></div>
     <div class="reset" id ="resetButton3"></div>
     <div class="sharelist-group" id="sharelist-group4"></div>
+    <div class="custom-space"></div>
     <div class="reset" id ="resetButton4"></div>
     <div class="sharelist-group" id="sharelist-group5"></div>
+    <div class="custom-space"></div>
     <div class="reset" id ="resetButton5"></div>
     <div class="sharelist-group" id="sharelist-group6"></div>
+    <div class="custom-space"></div>
     <div class="reset" id ="resetButton6"></div>
     <div class="sharelist-group" id="sharelist-group7"></div>
+    <div class="custom-space"></div>
     <div class="reset" id ="resetButton7"></div>
     <div class="sharelist-group" id="sharelist-group8"></div>
+    <div class="custom-space"></div>
     <div class="reset" id ="resetButton8"></div>
     <div class="sharelist-group" id="sharelist-group9"></div>
+    <div class="custom-space"></div>
     <div class="reset" id ="resetButton9"></div>
     <div class="sharelist-group" id="sharelist-group10"></div>
+    <div class="custom-space"></div>
     <div class="reset" id ="resetButton10"></div>
     <div class="sharelist-group" id="sharelist-group11"></div>
+    <div class="custom-space"></div>
     <div class="reset" id ="resetButton11"></div>
     <div class="sharelist-group" id="sharelist-group12"></div>
+    <div class="custom-space"></div>
     <div class="reset" id ="resetButton12"></div>
     <div class="global-group" id="Identity-group"></div>
     <br>
     <div class="sharelist-group" id="sharelist-group13"></div>
+    <div class="custom-space"></div>
     <div class="reset" id ="resetButton13"></div>
     <div class="sharelist-group" id="sharelist-group14"></div>
+    <div class="custom-space"></div>
     <div class="reset" id ="resetButton14"></div>
     <div class="sharelist-group" id="sharelist-group15"></div>
+    <div class="custom-space"></div>
     <div class="reset" id ="resetButton15"></div>
     <div class="sharelist-group" id="sharelist-group16"></div>
+    <div class="custom-space"></div>
     <div class="reset" id ="resetButton16"></div>
     <div class="sharelist-group" id="sharelist-group17"></div>
+    <div class="custom-space"></div>
     <div class="reset" id ="resetButton17"></div>
     <div class="sharelist-group" id="sharelist-group18"></div>
+    <div class="custom-space"></div>
     <div class="reset" id ="resetButton18"></div>
     <div class="sharelist-group" id="sharelist-group19"></div>
+    <div class="custom-space"></div>
     <div class="reset" id ="resetButton19"></div>
     <div class="sharelist-group" id="sharelist-group20"></div>
+    <div class="custom-space"></div>
     <div class="reset" id ="resetButton20"></div>
     <div class="sharelist-group" id="sharelist-group21"></div>
+    <div class="custom-space"></div>
     <div class="reset" id ="resetButton21"></div>
     <div class="sharelist-group" id="sharelist-group22"></div>
+    <div class="custom-space"></div>
     <div class="reset" id ="resetButton22"></div>
     <div class="sharelist-group" id="sharelist-group23"></div>
+    <div class="custom-space"></div>
     <div class="reset" id ="resetButton23"></div>
     <div class="sharelist-group" id="sharelist-group24"></div>
+    <div class="custom-space"></div>
     <div class="reset" id ="resetButton24"></div>
     <div class="global-group" id="EGO-group"></div>
     <br>
@@ -198,11 +242,11 @@
         { sharelistId: 'sharelist-group17', groupCount: 7, startId: 17001 },
         { sharelistId: 'sharelist-group18', groupCount: 7, startId: 18001 },
         { sharelistId: 'sharelist-group19', groupCount: 8, startId: 19001 },
-        { sharelistId: 'sharelist-group20', groupCount: 8, startId: 20001 },
+        { sharelistId: 'sharelist-group20', groupCount: 7, startId: 20001 },
         { sharelistId: 'sharelist-group21', groupCount: 7, startId: 21001 },
         { sharelistId: 'sharelist-group22', groupCount: 7, startId: 22001 },
         { sharelistId: 'sharelist-group23', groupCount: 7, startId: 23001 },
-        { sharelistId: 'sharelist-group24', groupCount: 8, startId: 24001 },
+        { sharelistId: 'sharelist-group24', groupCount: 7, startId: 24001 },
         ];// 新規人格E.G.Oを追加するときはここを変更する
 
         groupsData.forEach(({ sharelistId, groupCount, startId }) => {
@@ -232,7 +276,7 @@
                     lvInput.type = 'number';
                     lvInput.value = defaultLv;
                     lvInput.min = 0;
-                    lvInput.max = maxLv;
+                    lvInput.max = maxLv; 
                     lvInput.step = 1; //レベルは整数のみ
                     lvInput.dataset.id = startId + i;
                     lvInput.classList.add('lvinput');
@@ -253,7 +297,7 @@
                         } else if (value > maxLv) {
                             lvInput.value = maxLv;
                         }
-                    }); // 入力を制限
+                    }); // 入力を制限、レベル上限解放時はここも変更、上の1か所も変更を忘れずに
 
                     lvContainer.appendChild(lvText);
                     lvContainer.appendChild(lvInput);
@@ -267,9 +311,9 @@
 
         const groupNames = [
         '　 イサン  　', ' ファウスト  ', 'ドンキホーテ', '　　良秀　　', '　ムルソー　', '　 ホンル  　', 
-        'ヒースクリフ', 'イシュメール', '　ロージャ　', ' シンクレア  ', ' ウーティス  ', ' グレゴール  ', 
-        '　 イサン 　', ' ファウスト ', 'ドンキホーテ', '　　良秀　　', '　ムルソー　', '　 ホンル 　', 
-        'ヒースクリフ', 'イシュメール', '　ロージャ　', ' シンクレア ', ' ウーティス ', ' グレゴール '
+        'ヒースクリフ', 'イシュメール', '　ロージャ　', ' シンクレア  ', ' ウーティス  ', ' グレゴール  ',
+        '　 イサン  　', ' ファウスト  ', 'ドンキホーテ', '　　良秀　　', '　ムルソー　', '　 ホンル  　', 
+        'ヒースクリフ', 'イシュメール', '　ロージャ　', ' シンクレア  ', ' ウーティス  ', ' グレゴール  '
         ];
 
         // グループごとのリセットボタンを生成
@@ -301,8 +345,27 @@
             lvContainers.forEach(lvContainer => {
             lvContainer.style.display = lvCheckbox.checked ? 'flex' : 'none';
             });
+            customSpace();
             updateUrl();
         });
+
+        const enableResetCheckbox = document.getElementById('enableReset');
+        enableResetCheckbox.addEventListener('change', function () {
+            const resetButtons = document.querySelectorAll('.reset');
+            resetButtons.forEach(button => {
+                button.style.display = enableResetCheckbox.checked ? 'flex' : 'none';
+            });
+            customSpace();
+        });
+
+        function customSpace(){
+            const customSpaces = document.querySelectorAll('.custom-space');
+            const lvChecked = lvCheckbox.checked;
+            const resetChecked = enableResetCheckbox.checked;
+            customSpaces.forEach(space => {
+                space.style.display = (lvChecked || resetChecked) ? 'none' : 'flex';
+            });
+        }
 
         //状態復元処理
         let urlParams = new URLSearchParams(window.location.search);
@@ -809,7 +872,6 @@
             });
         }
         
-
         const altZeroCheckbox = document.getElementById('none-alt0');
         const altFlexCheckbox = document.getElementById('flex-alt0');
         const specificIdCheckbox = document.getElementById('none-id1');
@@ -964,12 +1026,41 @@
         document.getElementById('sort-reset').addEventListener('click', resetSorting);
         document.getElementById('blink-sort-reset').addEventListener('click', resetSorting);
 
-        const enableResetCheckbox = document.getElementById('enableReset');
-        enableResetCheckbox.addEventListener('change', function () {
-            const resetButtons = document.querySelectorAll('.reset');
-            resetButtons.forEach(button => {
-                button.style.display = enableResetCheckbox.checked ? 'flex' : 'none';
-            });
+        const imgSizeForm = document.getElementById('imgSizeForm');
+        const sizeMap = {
+            size1: { width: '60px', height: '60px', containerWidth: '60px' },
+            size2: { width: '80px', height: '80px', containerWidth: '80px' },
+            size3: { width: '120px', height: '120px', containerWidth: '120px' },
+            size4: { width: '200px', height: '200px', containerWidth: '200px' },
+        };
+
+        imgSizeForm.addEventListener('change', (event) => {
+            const selectedSize = event.target.value;
+            const size = sizeMap[selectedSize];
+            if (size) {
+                const containers = document.querySelectorAll('.container');
+                const imgs = document.querySelectorAll('.img');
+                const lvTexts = document.querySelectorAll('.lvtext');
+
+                containers.forEach(container => {
+                    container.style.width = size.containerWidth;
+                });
+
+                imgs.forEach(img => {
+                    img.style.width = size.width;
+                    img.style.height = size.height; 
+                });
+
+                if (selectedSize === 'size1') {
+                    lvTexts.forEach(lvText => {
+                        lvText.style.display = 'none';
+                    });
+                } else {
+                    lvTexts.forEach(lvText => {
+                        lvText.style.display = 'flex';
+                    });
+                }
+            }
         });
 
     });
