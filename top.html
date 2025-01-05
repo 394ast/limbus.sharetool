@@ -364,6 +364,11 @@
             customSpace();
         });
 
+        //topページでは初期状態はtrueに変更
+        enableResetCheckbox.checked = true;
+        const event = new Event('change');
+        enableResetCheckbox.dispatchEvent(event);
+
         function customSpace(){
             const customSpaces = document.querySelectorAll('.custom-space');
             const lvChecked = lvCheckbox.checked;
