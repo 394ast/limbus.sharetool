@@ -734,16 +734,19 @@
 
         function resetPrimary(state, startId, endId) {
             const images = document.querySelectorAll('img');
+            let currentState = state ;
             images.forEach(img => {
                 const id = parseInt(img.dataset.id, 10); 
                 if(id >= startId && id <= endId){
                     if (id % 1000 != 1 ) {
-                        state = 0
+                        currentState = 0 ;
+                    }else{
+                        currentState = state ;
                     }
                 const overlay = document.querySelector(`img[data-id="${id}"].overlay`);
-                syncAlt(img, overlay, state);
-                img.src = imgURL(id, state);
-                overlay.src = overlayURL(id, state);
+                syncAlt(img, overlay, currentState);
+                img.src = imgURL(id, currentState);
+                overlay.src = overlayURL(id, currentState);
                 }
             });
             updateUrl();
