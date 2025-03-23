@@ -702,8 +702,6 @@
                     const overlay = document.querySelector(`img[data-id="${id}"].overlay`);
                     if (img) {
                         syncAlt(img, overlay, state);
-                        img.src = imgURL(id, state);
-                        overlay.src = overlayURL(id, state);
                     }
                 }
             });
