@@ -95,7 +95,15 @@
         .indent {
             padding-left: 20px;
         }
-
+        
+        .grid-line{
+            border: 2px solid #999;
+            padding: 2px 26px;
+            margin: 6px 0 10px 0;
+            border-radius: 4px;
+            display: inline-block;
+        }
+        
     </style>
 </head>
 
@@ -104,22 +112,26 @@
     <p>画像をクリックして強化段階を変更できます。<br>
         実装順に並んでいます。<br>
         一番下に共有用URLが表示されます。</p>
-        画像のオプション<br>
-            <span class="indent">画像サイズ:</span><div id="imgSizeForm">
-                <input type="radio" name="imgSize" value="size1">小
-                <input type="radio" name="imgSize" value="size2" checked>中
-                <input type="radio" name="imgSize" value="size3">大
-                <input type="radio" name="imgSize" value="size4">特大<br>
-                <input type="radio" name="imgSize" value="custom">カスタム <input type="number" id="customWidth" disabled>px
-            </div>
+        <U>画像のオプション</U><br>
+            <div class="grid-line">
+                <span class="indent">画像サイズ:</span><div id="imgSizeForm">
+                    <input type="radio" name="imgSize" value="size1">小
+                    <input type="radio" name="imgSize" value="size2" checked>中
+                    <input type="radio" name="imgSize" value="size3">大
+                    <input type="radio" name="imgSize" value="size4">特大<br>
+                    <input type="radio" name="imgSize" value="custom">カスタム <input type="number" id="customWidth" disabled>px
+                </div>
+            </div><br>
             <span class="indent"></span><input type="checkbox" id="monochrome" checked> 未所持を暗く表示する<br>
-            <input type="radio" name="Uptie" value="default" checked>同期化段階に合わせて画像を表示する<br>
-            <input type="radio" name="Uptie" value="before">つねに同期前の画像を表示する<br>
-            <input type="radio" name="Uptie" value="after">つねに同期後の画像を表示する<br>
+            <div class="grid-line">
+                <input type="radio" name="Uptie" value="default" checked>同期化段階に合わせて画像を表示する<br>
+                <input type="radio" name="Uptie" value="before">つねに同期前の画像を表示する<br>
+                <input type="radio" name="Uptie" value="after">つねに同期後の画像を表示する<br>
+            </div><br>
             <span class="indent"></span><input type="checkbox" id="overlay"> 強化段階のラベルを表示しない<br>
             <br>
 
-    ・共有する側に向けてのオプション<br>
+    <U>共有する側に向けてのオプション</U><br>
     <input type="checkbox" id="enableLv"> Lv共有機能を有効にする（未所持の人格のLvは共有できません）<br>
     <input type="checkbox" id="enableReset"> 強化段階の一括変更ボタンを表示する
     <span class="reset"><br>全囚人を一括で変更する:</span>
@@ -138,7 +150,7 @@
         <br>
     </div>
     <details>
-        <summary>共有された側に向けてのオプション(この行をクリックして開閉)</summary>
+        <summary><U>共有された側に向けてのオプション(この行をクリックして開閉)</U></summary>
         <br>
         <input type="checkbox" id="none-alt0">未所持を表示しない
         <input type="checkbox" id="flex-alt0">未所持のみ表示する<br>
