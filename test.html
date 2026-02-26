@@ -29,6 +29,30 @@
             position: relative;
         }
 
+        .item-row {
+            display: flex;
+            align-items: flex-start;
+        }
+
+        .image-stack {
+            position: relative;
+            width: 80px;
+            height: 80px;
+        }
+
+        .state-button-group {
+            display: none;
+            flex-direction: column;
+            gap: 2px;
+            margin-left: 4px;
+        }
+
+        .state-btn {
+            font-size: 11px;
+            line-height: 1.1;
+            padding: 2px 4px;
+        }
+
         .img {
             width: 80px;
             height: 80px;
@@ -130,6 +154,10 @@
 
 <body>
     <h2>リンバス所持人格E.G.O共有ツール</h2>
+    強化段階の切り替え方法:
+    <input type="radio" name="state-switch-mode" value="image" checked>画像をクリック
+    <input type="radio" name="state-switch-mode" value="button">ボタンをクリック
+    <input type="radio" name="state-switch-mode" value="lock">切り替えをロック
     <p>画像をクリックして強化段階を変更できます。<br>
         実装順に並んでいます。<br>
         一番下に共有用URLが表示されます。</p>
@@ -322,6 +350,12 @@
                     container.dataset.time = itemMetadata.time;
                 }
 
+                const itemRow = document.createElement('div');
+                itemRow.classList.add('item-row');
+
+                const imageStack = document.createElement('div');
+                imageStack.classList.add('image-stack');
+
                 // 画像要素を作成
                 const img = document.createElement('img');
                 img.dataset.id = startId + i;
@@ -337,8 +371,25 @@
                 img.src = imgURL(img.dataset.id, altValue);
                 overlay.src = overlayURL(overlay.dataset.id, altValue);
 
-                container.appendChild(img);
-                container.appendChild(overlay);
+                imageStack.appendChild(img);
+                imageStack.appendChild(overlay);
+                itemRow.appendChild(imageStack);
+
+                const stateButtonGroup = document.createElement('div');
+                stateButtonGroup.classList.add('state-button-group');
+                const buttonPrefix = startId + i < 13000 ? '同期' : '解析';
+
+                for (let state = maxState; state >= 0; state--) {
+                    const stateButton = document.createElement('button');
+                    stateButton.type = 'button';
+                    stateButton.classList.add('state-btn');
+                    stateButton.dataset.state = state;
+                    stateButton.textContent = state === 0 ? '未所持' : `${buttonPrefix}${toRoman(state)}`;
+                    stateButtonGroup.appendChild(stateButton);
+                }
+
+                itemRow.appendChild(stateButtonGroup);
+                container.appendChild(itemRow);
                 
                 // Lvの入力フィールド(条件付きで追加)
                 if (startId + i < 13000) {
@@ -479,6 +530,32 @@
             overlay.alt = altValue;
         }
 
+        function toRoman(number) {
+            const romanMap = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X'];
+            return romanMap[number - 1] ?? number;
+        }
+
+        function getStateSwitchMode() {
+            return document.querySelector('input[name="state-switch-mode"]:checked')?.value ?? 'image';
+        }
+
+        function applyState(container, nextState) {
+            const img = container.querySelector('.img');
+            const overlay = container.querySelector('.overlay');
+            syncAlt(img, overlay, nextState);
+            img.src = imgURL(img.dataset.id, nextState);
+            overlay.src = overlayURL(overlay.dataset.id, nextState);
+            syncBetweenGroups(img); //個別グローバル同期
+            updateUrl();
+        }
+
+        function updateStateSwitchModeUI() {
+            const mode = getStateSwitchMode();
+            document.querySelectorAll('.state-button-group').forEach((group) => {
+                group.style.display = mode === 'button' ? 'flex' : 'none';
+            });
+        }
+
         const groupNames = [
         '　 イサン  　', ' ファウスト  ', 'ドンキホーテ', '　　良秀　　', '　ムルソー　', '　 ホンル  　', 
         'ヒースクリフ', 'イシュメール', '　ロージャ　', ' シンクレア  ', ' ウーティス  ', ' グレゴール  ',
@@ -573,6 +650,7 @@
             }
         });
         updateMetadataLabels();
+        updateStateSwitchModeUI();
 
         // ページが読み込まれたときにもURLを更新
         updateUrl();
@@ -581,23 +659,33 @@
         // クリック時の状態変更処理
         document.querySelectorAll(".container").forEach(container => {
             container.addEventListener("click", (event) => {
-            // クリックされたのがlvだった場合、親のクリックイベントを発火させない
-            if (event.target.classList.contains("lvinput") || event.target.classList.contains("lvtext")) {
-                event.stopPropagation();
-                return;
-            }
-            const img = container.querySelector(".img");
-            const overlay = container.querySelector(".overlay");
-            const id = container.dataset.id;
-            let currentState = parseInt(img.alt, 10) || 0; // alt属性から現在の状態を取得
-            currentState = (currentState + 1) % (maxState + 1); // 状態を循環
-            syncAlt(img, overlay, currentState);
+                if (event.target.classList.contains("lvinput") || event.target.classList.contains("lvtext")) {
+                    event.stopPropagation();
+                    return;
+                }
 
-            img.src = imgURL(img.dataset.id, currentState);
-            overlay.src = overlayURL(overlay.dataset.id, currentState);
+                const mode = getStateSwitchMode();
+                if (mode === 'lock') {
+                    return;
+                }
 
-            syncBetweenGroups(img); //個別グローバル同期
-            updateUrl(); // URLを更新
+                if (event.target.classList.contains('state-btn')) {
+                    if (mode !== 'button') {
+                        return;
+                    }
+                    const selectedState = parseInt(event.target.dataset.state, 10);
+                    applyState(container, selectedState);
+                    return;
+                }
+
+                if (mode !== 'image') {
+                    return;
+                }
+
+                const img = container.querySelector(".img");
+                let currentState = parseInt(img.alt, 10) || 0; // alt属性から現在の状態を取得
+                currentState = (currentState + 1) % (maxState + 1); // 状態を循環
+                applyState(container, currentState);
             });
         });
 
@@ -1278,6 +1366,7 @@
             const containers = document.querySelectorAll('.container');
             const imgs = document.querySelectorAll('.img');
             const overlays = document.querySelectorAll('.overlay');
+            const imageStacks = document.querySelectorAll('.image-stack');
             const lvTexts = document.querySelectorAll('.lvtext');
             containers.forEach(container => {
                 container.style.width = `${width}px`;
@@ -1285,6 +1374,10 @@
             imgs.forEach(img => {
                 img.style.width = `${width}px`;
                 img.style.height = `${width}px`;
+            });
+            imageStacks.forEach((stack) => {
+                stack.style.width = `${width}px`;
+                stack.style.height = `${width}px`;
             });
             overlays.forEach(overlay => {
                 overlay.style.width = `${(width * 6) / 7}px`;
@@ -1376,7 +1469,12 @@
             document.getElementById(id).addEventListener('change', updateMetadataLabels);
         });
 
+        document.querySelectorAll('input[name="state-switch-mode"]').forEach((radio) => {
+            radio.addEventListener('change', updateStateSwitchModeUI);
+        });
+
         updateMetadataLabels();
+        updateStateSwitchModeUI();
 
     });
     </script>
