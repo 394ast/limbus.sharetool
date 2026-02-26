@@ -42,18 +42,23 @@
 
         .state-button-group {
             display: none;
-            flex-direction: row;
-            flex-wrap: wrap;
+            flex-direction: column;
+            flex-wrap: nowrap;
             gap: 2px;
             margin-left: 4px;
-            align-items: flex-start;
-            max-width: 230px;
+            align-items: stretch;
+            width: max-content;
+            max-width: none;
+            flex-shrink: 0;
         }
 
         .state-btn {
             font-size: 11px;
             line-height: 1.1;
             padding: 2px 4px;
+            white-space: nowrap;
+            width: 100%;
+            box-sizing: border-box;
         }
 
         .img {
