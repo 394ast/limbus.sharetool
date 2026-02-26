@@ -73,10 +73,14 @@
 
         .meta-line {
             display: none;
-            white-space: nowrap;
             font-size: 11px;
             line-height: 1.15;
             margin-top: 2px;
+        }
+
+        .meta-item {
+            display: none;
+            white-space: nowrap;
         }
 
         textarea{
@@ -377,6 +381,17 @@
 
                 const metaLine = document.createElement('div');
                 metaLine.classList.add('meta-line');
+
+                const metaName1 = document.createElement('div');
+                metaName1.classList.add('meta-item', 'meta-name1');
+                const metaName2 = document.createElement('div');
+                metaName2.classList.add('meta-item', 'meta-name2');
+                const metaSeason = document.createElement('div');
+                metaSeason.classList.add('meta-item', 'meta-season');
+
+                metaLine.appendChild(metaName1);
+                metaLine.appendChild(metaName2);
+                metaLine.appendChild(metaSeason);
                 container.appendChild(metaLine);
 
                 // sharelistGroupに追加
@@ -1280,6 +1295,7 @@
             lvTexts.forEach(lvText => {
                 lvText.style.display = width < 80 ? 'none' : 'flex';
             });
+            updateContainerMarginsForMetadata();
         }   //画像サイズを調整する関数
 
         function updateMetadataLabels() {
@@ -1293,19 +1309,43 @@
                     return;
                 }
 
-                const parts = [];
-                if (showName1 && container.dataset.name1) {
-                    parts.push(container.dataset.name1);
-                }
-                if (showName2 && container.dataset.name2) {
-                    parts.push(container.dataset.name2);
-                }
-                if (showSeason && container.dataset.season) {
-                    parts.push(container.dataset.season);
+                const metaName1 = metaLine.querySelector('.meta-name1');
+                const metaName2 = metaLine.querySelector('.meta-name2');
+                const metaSeason = metaLine.querySelector('.meta-season');
+
+                const showName1Line = showName1 && Boolean(container.dataset.name1);
+                const showName2Line = showName2 && Boolean(container.dataset.name2);
+                const showSeasonLine = showSeason && Boolean(container.dataset.season);
+
+                metaName1.textContent = showName1Line ? container.dataset.name1 : '';
+                metaName2.textContent = showName2Line ? container.dataset.name2 : '';
+                metaSeason.textContent = showSeasonLine ? container.dataset.season : '';
+
+                metaName1.style.display = showName1Line ? 'block' : 'none';
+                metaName2.style.display = showName2Line ? 'block' : 'none';
+                metaSeason.style.display = showSeasonLine ? 'block' : 'none';
+
+                metaLine.style.display = (showName1Line || showName2Line || showSeasonLine) ? 'block' : 'none';
+            });
+
+            updateContainerMarginsForMetadata();
+        }
+
+        function updateContainerMarginsForMetadata() {
+            document.querySelectorAll('.container').forEach((container) => {
+                const img = container.querySelector('.img');
+                const metaItems = container.querySelectorAll('.meta-item');
+                if (!img || metaItems.length === 0) {
+                    return;
                 }
 
-                metaLine.textContent = parts.join(' ');
-                metaLine.style.display = parts.length > 0 ? 'block' : 'none';
+                const imageWidth = img.clientWidth || parseInt(img.style.width, 10) || 80;
+                const maxTextWidth = Array.from(metaItems)
+                    .filter((item) => item.style.display !== 'none')
+                    .reduce((max, item) => Math.max(max, item.scrollWidth), 0);
+
+                const extraMargin = Math.max(0, maxTextWidth - imageWidth);
+                container.style.marginRight = `${extraMargin + 6}px`;
             });
         }
 
