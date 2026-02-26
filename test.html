@@ -42,7 +42,7 @@
 
         .state-button-group {
             display: none;
-            flex-direction: row;
+            flex-direction: column;
             flex-wrap: wrap;
             gap: 2px;
             margin-left: 4px;
@@ -157,13 +157,9 @@
 
 <body>
     <h2>リンバス所持人格E.G.O共有ツール</h2>
-    強化段階の切り替え方法:
-    <input type="radio" name="state-switch-mode" value="image" checked>画像をクリック
-    <input type="radio" name="state-switch-mode" value="button">ボタンをクリック
-    <input type="radio" name="state-switch-mode" value="lock">切り替えをロック
-    <p>画像をクリックして強化段階を変更できます。<br>
-        実装順に並んでいます。<br>
-        一番下に共有用URLが表示されます。</p>
+     <input type="checkbox" id="enableLv"> 所持状況と合わせて人格のレベルを共有する（未所持の人格のLvは共有できません）<br>
+    <p>所持状況を入力していき、下の方にある共有用URLをコピーしましょう<br>ステージ攻略や自販機交換の相談に役立てて下さい</p>
+    
         <U>画像のオプション</U><br>
             <div class="grid-line">
                 <span class="indent">画像サイズ:</span><div id="imgSizeForm">
@@ -187,9 +183,8 @@
                 <input type="checkbox" id="show-season"> シーズン区分を表示する
             </div><br>
             <br>
-
-    <U>共有する側に向けてのオプション</U><br>
-    <input type="checkbox" id="enableLv"> Lv共有機能を有効にする（未所持の人格のLvは共有できません）<br>
+    
+   
     <input type="checkbox" id="enableReset"> 強化段階の一括変更ボタンを表示する
     <span class="reset"><br>全囚人を一括で変更する:</span>
     <button class="reset" id="reset0-1">初期人格E.G.Oのみ同期/解析1で所持</button>
@@ -222,6 +217,12 @@
         </div>
             <button id="sort-reset">並びを初期化する</button>
     </details>
+
+    強化段階の切り替え方法:
+    <input type="radio" name="state-switch-mode" value="image" checked>画像をクリック
+    <input type="radio" name="state-switch-mode" value="button">ボタンをクリック
+    <input type="radio" name="state-switch-mode" value="lock">切り替えをロック
+        
     <br>
     <div class="sharelist-group" id="sharelist-group1"></div>
     <div class="custom-space"></div>
