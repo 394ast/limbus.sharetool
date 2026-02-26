@@ -46,20 +46,14 @@
             flex-wrap: nowrap;
             gap: 2px;
             margin-left: 4px;
-<<<<<<< codex/edit-test.html-to-arrange-buttons-vertically-gcb8zt
             align-items: stretch;
             width: max-content;
             max-width: none;
             flex-shrink: 0;
-=======
-            align-items: flex-start;
-            width: max-content;
-            max-width: none;
->>>>>>> main
         }
 
         .state-btn {
-            font-size: 11px;
+            font-size: 13px;
             line-height: 1.1;
             padding: 2px 4px;
             white-space: nowrap;
@@ -110,9 +104,11 @@
 
         .meta-line {
             display: none;
-            font-size: 11px;
+            font-size: 13px;
             line-height: 1.15;
             margin-top: 2px;
+            width: 100%;
+            text-align: center;
         }
 
         .meta-item {
@@ -185,8 +181,8 @@
             <input type="radio" name="Uptie" value="before">つねに同期前の画像を表示する<br>
             <input type="radio" name="Uptie" value="after">つねに同期後の画像を表示する<br>
         </div><br>
-            <span class="indent"></span><input type="checkbox" id="overlay"> 画像下部に強化段階のラベルを表示しない<br>
         <div class="meta-option-group indent">
+            <input type="checkbox" id="overlay" checked> 画像下部に強化段階のラベルを表示する<br>
             <input type="checkbox" id="show-name1"> 人格,E.G.O名を表示する<br>
             <input type="checkbox" id="show-name2"> 囚人名を表示する<br>
             <input type="checkbox" id="show-season"> シーズン区分を表示する
@@ -662,6 +658,7 @@
                 });
             }
         });
+        updateOverlayVisibility();
         updateMetadataLabels();
         updateStateSwitchModeUI();
 
@@ -1456,8 +1453,9 @@
                     ? stateButtonGroup.scrollWidth + 4
                     : 0;
 
-                const extraMargin = Math.max(0, maxTextWidth - imageWidth);
-                container.style.marginRight = `${extraMargin + buttonWidth + 6}px`;
+                const requiredContentWidth = Math.max(imageWidth, maxTextWidth);
+                container.style.minWidth = `${requiredContentWidth}px`;
+                container.style.marginRight = `${buttonWidth + 6}px`;
             });
         }
 
@@ -1477,12 +1475,14 @@
             radio.addEventListener("change", updateImages);
         });
 
-        document.getElementById("overlay").addEventListener("click", () => {
+        function updateOverlayVisibility() {
             const isChecked = document.getElementById("overlay").checked;
             document.querySelectorAll(".overlay").forEach(overlay => {
-                overlay.style.display = isChecked ? "none" : "block";
+                overlay.style.display = isChecked ? "block" : "none";
             });
-        });
+        }
+
+        document.getElementById("overlay").addEventListener("click", updateOverlayVisibility);
 
         ['show-name1', 'show-name2', 'show-season'].forEach((id) => {
             document.getElementById(id).addEventListener('change', updateMetadataLabels);
