@@ -259,6 +259,7 @@
         const maxState = 4; // 強化段階の最大値
         const defaultLv = 0; //未所持を想定
         const maxLv = 60; //レベル上限解放時はここを書き換える
+        const changecodingDIffID = 0; // 下位idが36を超えるとき手動で1に変更する
         const lvCheckbox = document.getElementById("enableLv");
         const namelistSources = [
             "https://raw.githubusercontent.com/394ast/limbus.tiermaker/maim/namelist.json",
@@ -608,32 +609,41 @@
             let count = 1;
             for (let i = 1; i < data.length; i++) {
                 if (data[i] === data[i - 1]) {
-                count++;
-            } else {
-                result += count.toString(36) + data[i - 1]; // 36進数で表記
-            count = 1;
+                    count++;
+                } else {
+                    const encodedCount = changecodingDIffID === 1
+                        ? count.toString(36).padStart(2, '0')
+                        : count.toString(36);
+                    result += `${encodedCount}${data[i - 1]}`; // 36進数で表記
+                    count = 1;
+                }
             }
-            }
-        // 最後の部分を追加、最後の文字が'0'の場合は追加しない
+
+            // 最後の部分を追加、最後の文字が'0'の場合は追加しない
             if (data[data.length - 1] !== '0') {
-            result += count.toString(36) + data[data.length - 1];
+                const encodedCount = changecodingDIffID === 1
+                    ? count.toString(36).padStart(2, '0')
+                    : count.toString(36);
+                result += `${encodedCount}${data[data.length - 1]}`;
             }
-        return result;
+            return result;
         }
         
         // 解凍関数（ランレングス圧縮の逆）
         function runLengthDecode(encodedData) {
             let result = [];
             let i = 0;
+            const countLength = changecodingDIffID === 1 ? 2 : 1;
+
             while (i < encodedData.length) {
-                let count = parseInt(encodedData[i],36); // 
-                let state = encodedData[i + 1];
+                const count = parseInt(encodedData.slice(i, i + countLength), 36);
+                const state = encodedData[i + countLength];
                 for (let j = 0; j < count; j++) {
                     result.push(state);
                 }
-                i += 2; // 次のペアへ
+                i += countLength + 1; // 次のペアへ
             }
-        return result;
+            return result;
         }
 
         // 圧縮処理
