@@ -90,12 +90,11 @@
         }
 
         .meta-option-group {
-            display: inline-block;
-            border: 1px solid #999;
+            border: 2px solid #999;
+            padding: 2px 26px;
+            margin: 6px 0 10px 0;
             border-radius: 4px;
-            padding: 3px 8px;
-            margin-top: 2px;
-            line-height: 1.25;
+            display: inline-block;
         }
 
         .meta-line {
@@ -160,32 +159,29 @@
      <input type="checkbox" id="enableLv"> 所持状況と合わせて人格のレベルを共有する（未所持の人格のLvは共有できません）<br>
     <p>所持状況を入力していき、下の方にある共有用URLをコピーしましょう<br>ステージ攻略や自販機交換の相談に役立てて下さい</p>
     
-        <U>画像のオプション</U><br>
-            <div class="grid-line">
-                <span class="indent">画像サイズ:</span><div id="imgSizeForm">
-                    <input type="radio" name="imgSize" value="size1">小
-                    <input type="radio" name="imgSize" value="size2" checked>中
-                    <input type="radio" name="imgSize" value="size3">大
-                    <input type="radio" name="imgSize" value="size4">特大<br>
-                    <input type="radio" name="imgSize" value="custom">カスタム <input type="number" id="customWidth" disabled>px
-                </div>
-            </div><br>
-            <span class="indent"></span><input type="checkbox" id="monochrome" checked> 未所持を暗く表示する<br>
-            <div class="grid-line">
-                <input type="radio" name="Uptie" value="default" checked>同期化段階に合わせて画像を表示する<br>
-                <input type="radio" name="Uptie" value="before">つねに同期前の画像を表示する<br>
-                <input type="radio" name="Uptie" value="after">つねに同期後の画像を表示する<br>
-            </div><br>
+        <div class="grid-line">
+            <span class="indent">画像サイズ:</span><div id="imgSizeForm">
+                <input type="radio" name="imgSize" value="size1">小
+                <input type="radio" name="imgSize" value="size2" checked>中
+                <input type="radio" name="imgSize" value="size3">大
+                <input type="radio" name="imgSize" value="size4">特大<br>
+                <input type="radio" name="imgSize" value="custom">カスタム <input type="number" id="customWidth" disabled>px
+            </div>
+        </div><br>
+        <span class="indent"></span><input type="checkbox" id="monochrome" checked> 未所持を暗く表示する<br>
+        <div class="grid-line">
+            <input type="radio" name="Uptie" value="default" checked>同期化段階に合わせて画像を表示する<br>
+            <input type="radio" name="Uptie" value="before">つねに同期前の画像を表示する<br>
+            <input type="radio" name="Uptie" value="after">つねに同期後の画像を表示する<br>
+        </div><br>
             <span class="indent"></span><input type="checkbox" id="overlay"> 強化段階のラベルを表示しない<br>
-            <div class="meta-option-group indent">
-                <input type="checkbox" id="show-name1"> 人格,E.G.O名を表示する<br>
-                <input type="checkbox" id="show-name2"> 囚人名を表示する<br>
-                <input type="checkbox" id="show-season"> シーズン区分を表示する
-            </div><br>
-            <br>
+        <div class="meta-option-group indent">
+            <input type="checkbox" id="show-name1"> 人格,E.G.O名を表示する<br>
+            <input type="checkbox" id="show-name2"> 囚人名を表示する<br>
+            <input type="checkbox" id="show-season"> シーズン区分を表示する
+        </div><br>
+        <br>
     
-   
-    <input type="checkbox" id="enableReset"> 強化段階の一括変更ボタンを表示する
     <span class="reset"><br>全囚人を一括で変更する:</span>
     <button class="reset" id="reset0-1">初期人格E.G.Oのみ同期/解析1で所持</button>
     <button class="reset" id="reset0-2">初期人格E.G.Oのみ同期/解析2で所持</button>
@@ -222,6 +218,7 @@
     <input type="radio" name="state-switch-mode" value="image" checked>画像をクリック
     <input type="radio" name="state-switch-mode" value="button">ボタンをクリック
     <input type="radio" name="state-switch-mode" value="lock">切り替えをロック
+    <input type="checkbox" id="enableReset"> 強化段階の一括変更ボタンを表示する
         
     <br>
     <div class="sharelist-group" id="sharelist-group1"></div>
