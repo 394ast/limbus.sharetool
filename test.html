@@ -14,11 +14,13 @@
         .sharelist-group {
             display: flex;
             flex-wrap: wrap;
+            row-gap: 12px;
         }
         
         .global-group{
             display: none;
             flex-wrap: wrap;
+            row-gap: 12px;
         }
 
         .container {
@@ -1455,7 +1457,7 @@
 
                 const requiredContentWidth = Math.max(imageWidth, maxTextWidth);
                 container.style.minWidth = `${requiredContentWidth}px`;
-                container.style.marginRight = `${buttonWidth + 6}px`;
+                container.style.marginRight = `${buttonWidth + 8}px`;
             });
         }
 
