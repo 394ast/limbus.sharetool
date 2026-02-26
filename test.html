@@ -42,9 +42,12 @@
 
         .state-button-group {
             display: none;
-            flex-direction: column;
+            flex-direction: row;
+            flex-wrap: wrap;
             gap: 2px;
             margin-left: 4px;
+            align-items: flex-start;
+            max-width: 230px;
         }
 
         .state-btn {
@@ -554,6 +557,7 @@
             document.querySelectorAll('.state-button-group').forEach((group) => {
                 group.style.display = mode === 'button' ? 'flex' : 'none';
             });
+            updateContainerMarginsForMetadata();
         }
 
         const groupNames = [
@@ -1437,8 +1441,14 @@
                     .filter((item) => item.style.display !== 'none')
                     .reduce((max, item) => Math.max(max, item.scrollWidth), 0);
 
+                const stateButtonGroup = container.querySelector('.state-button-group');
+                const mode = getStateSwitchMode();
+                const buttonWidth = (mode === 'button' && stateButtonGroup)
+                    ? stateButtonGroup.scrollWidth + 4
+                    : 0;
+
                 const extraMargin = Math.max(0, maxTextWidth - imageWidth);
-                container.style.marginRight = `${extraMargin + 6}px`;
+                container.style.marginRight = `${extraMargin + buttonWidth + 6}px`;
             });
         }
 
