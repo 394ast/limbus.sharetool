@@ -575,14 +575,6 @@
 
         //URL更新関数
         function updateUrl() {
-            // ラジオボタンが選択されている場合、メッセージを表示して処理を停止
-            const selectedRadio = document.querySelector('input[name="sort"]:checked');
-            if (selectedRadio) {
-                document.querySelector('.share-url-textarea').value = "ソート中は共有用URLを生成できません。「並びを初期化する」ボタンを押してください。";
-                document.querySelector('.shortened-url-textarea').value = "ソート中は共有用URLを生成できません。「並びを初期化する」ボタンを押してください。";
-                return; // URL生成処理を中止
-            }
-            
             const enableLv = document.getElementById("enableLv").checked;
             const baseUrl = "https://394ast.github.io/limbus.sharetool/";
             const compressedImgData = compressImgData();
