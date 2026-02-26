@@ -651,17 +651,26 @@
         // 圧縮処理
         function compressImgData() {
             const separator = '-'; // グループを区切るセパレータ
-            // グループごとの状態を取得し、連結して返す
-            const groupStates = groupsData.map(({ sharelistId }) => {
-                const sharelistGroup = document.getElementById(sharelistId);
-                const images = sharelistGroup.querySelectorAll(".img");
-                const states = Array.from(images).map(img => parseInt(img.alt, 10) || 0);
-                const allstates = states.join(""); // グループ内の状態を連結
-                const compressedImgDataR =  `R${runLengthEncode(allstates)}`;
+            // ID帯（1001〜2000, 2001〜3000 ...）ごとに、id昇順で24グループを作成
+            const groupStates = Array.from({ length: 24 }, (_, index) => {
+                const groupNumber = index + 1;
+                const minId = groupNumber * 1000 + 1;
+                const maxId = (groupNumber + 1) * 1000;
+
+                const states = Array.from(document.querySelectorAll('.sharelist-group .img'))
+                    .filter((img) => {
+                        const id = Number(img.dataset.id);
+                        return id >= minId && id <= maxId;
+                    })
+                    .sort((a, b) => Number(a.dataset.id) - Number(b.dataset.id))
+                    .map((img) => parseInt(img.alt, 10) || 0);
+
+                const allstates = states.join(''); // グループ内の状態を連結
+                const compressedImgDataR = `R${runLengthEncode(allstates)}`;
                 const compressedImgData0 = allstates.replace(/0+$/, '');
                 return compressedImgDataR.length < compressedImgData0.length ? compressedImgDataR : compressedImgData0;
-            });    
-        return groupStates.join(separator); // グループ間をseparatorで区切る
+            });
+            return groupStates.join(separator); // グループ間をseparatorで区切る
         }
 
         function compresslvData() {
