@@ -62,6 +62,23 @@
             width: 30px;
         }
 
+        .meta-option-group {
+            display: inline-block;
+            border: 1px solid #999;
+            border-radius: 4px;
+            padding: 3px 8px;
+            margin-top: 2px;
+            line-height: 1.25;
+        }
+
+        .meta-line {
+            display: none;
+            white-space: nowrap;
+            font-size: 11px;
+            line-height: 1.15;
+            margin-top: 2px;
+        }
+
         textarea{
             width: 90%;
             resize:none;
@@ -129,6 +146,11 @@
                 <input type="radio" name="Uptie" value="after">つねに同期後の画像を表示する<br>
             </div><br>
             <span class="indent"></span><input type="checkbox" id="overlay"> 強化段階のラベルを表示しない<br>
+            <div class="meta-option-group indent">
+                <input type="checkbox" id="show-name1"> 人格,E.G.O名を表示する<br>
+                <input type="checkbox" id="show-name2"> 囚人名を表示する<br>
+                <input type="checkbox" id="show-season"> シーズン区分を表示する
+            </div><br>
             <br>
 
     <U>共有する側に向けてのオプション</U><br>
@@ -353,6 +375,10 @@
                     container.appendChild(lvContainer);
                 }
 
+                const metaLine = document.createElement('div');
+                metaLine.classList.add('meta-line');
+                container.appendChild(metaLine);
+
                 // sharelistGroupに追加
                 sharelistGroup.appendChild(container);
             }
@@ -531,6 +557,7 @@
                 });
             }
         });
+        updateMetadataLabels();
 
         // ページが読み込まれたときにもURLを更新
         updateUrl();
@@ -1255,6 +1282,33 @@
             });
         }   //画像サイズを調整する関数
 
+        function updateMetadataLabels() {
+            const showName1 = document.getElementById('show-name1').checked;
+            const showName2 = document.getElementById('show-name2').checked;
+            const showSeason = document.getElementById('show-season').checked;
+
+            document.querySelectorAll('.container').forEach(container => {
+                const metaLine = container.querySelector('.meta-line');
+                if (!metaLine) {
+                    return;
+                }
+
+                const parts = [];
+                if (showName1 && container.dataset.name1) {
+                    parts.push(container.dataset.name1);
+                }
+                if (showName2 && container.dataset.name2) {
+                    parts.push(container.dataset.name2);
+                }
+                if (showSeason && container.dataset.season) {
+                    parts.push(container.dataset.season);
+                }
+
+                metaLine.textContent = parts.join(' ');
+                metaLine.style.display = parts.length > 0 ? 'block' : 'none';
+            });
+        }
+
         function updateImages() {
             document.querySelectorAll(".container").forEach(container => {
                 const img = container.querySelector(".img");
@@ -1277,6 +1331,12 @@
                 overlay.style.display = isChecked ? "none" : "block";
             });
         });
+
+        ['show-name1', 'show-name2', 'show-season'].forEach((id) => {
+            document.getElementById(id).addEventListener('change', updateMetadataLabels);
+        });
+
+        updateMetadataLabels();
 
     });
     </script>
