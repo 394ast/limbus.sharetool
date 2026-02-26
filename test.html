@@ -29,6 +29,33 @@
             position: relative;
         }
 
+        .item-row {
+            display: flex;
+            align-items: flex-start;
+        }
+
+        .image-stack {
+            position: relative;
+            width: 80px;
+            height: 80px;
+        }
+
+        .state-button-group {
+            display: none;
+            flex-direction: row;
+            flex-wrap: wrap;
+            gap: 2px;
+            margin-left: 4px;
+            align-items: flex-start;
+            max-width: 230px;
+        }
+
+        .state-btn {
+            font-size: 11px;
+            line-height: 1.1;
+            padding: 2px 4px;
+        }
+
         .img {
             width: 80px;
             height: 80px;
@@ -60,6 +87,27 @@
 
         .lvinput {
             width: 30px;
+        }
+
+        .meta-option-group {
+            display: inline-block;
+            border: 1px solid #999;
+            border-radius: 4px;
+            padding: 3px 8px;
+            margin-top: 2px;
+            line-height: 1.25;
+        }
+
+        .meta-line {
+            display: none;
+            font-size: 11px;
+            line-height: 1.15;
+            margin-top: 2px;
+        }
+
+        .meta-item {
+            display: none;
+            white-space: nowrap;
         }
 
         textarea{
@@ -109,6 +157,10 @@
 
 <body>
     <h2>リンバス所持人格E.G.O共有ツール</h2>
+    強化段階の切り替え方法:
+    <input type="radio" name="state-switch-mode" value="image" checked>画像をクリック
+    <input type="radio" name="state-switch-mode" value="button">ボタンをクリック
+    <input type="radio" name="state-switch-mode" value="lock">切り替えをロック
     <p>画像をクリックして強化段階を変更できます。<br>
         実装順に並んでいます。<br>
         一番下に共有用URLが表示されます。</p>
@@ -129,6 +181,11 @@
                 <input type="radio" name="Uptie" value="after">つねに同期後の画像を表示する<br>
             </div><br>
             <span class="indent"></span><input type="checkbox" id="overlay"> 強化段階のラベルを表示しない<br>
+            <div class="meta-option-group indent">
+                <input type="checkbox" id="show-name1"> 人格,E.G.O名を表示する<br>
+                <input type="checkbox" id="show-name2"> 囚人名を表示する<br>
+                <input type="checkbox" id="show-season"> シーズン区分を表示する
+            </div><br>
             <br>
 
     <U>共有する側に向けてのオプション</U><br>
@@ -243,7 +300,6 @@
     <div class="global-group" id="EGO-group"></div>
     <br>
     <p>共有用URL: <textarea class="share-url-textarea" readonly></textarea></p>
-    <button id="blink-sort-reset">並びを初期化する</button>
     <button id="copyButton">共有用URLをコピー</button>
     <br>
     <br>
@@ -254,38 +310,32 @@
     <button id="shortenButton" style="margin-bottom: 50px;">短縮URLを生成してコピー</button>
 
     <script>
-    document.addEventListener("DOMContentLoaded", () => {
+    document.addEventListener("DOMContentLoaded", async () => {
         const defaultState = 4; // 初期状態
         const maxState = 4; // 強化段階の最大値
         const defaultLv = 0; //未所持を想定
         const maxLv = 60; //レベル上限解放時はここを書き換える
+        const changecodingDIffID = 0; // 下位idが36を超えるとき手動で1に変更する
         const lvCheckbox = document.getElementById("enableLv");
-        const groupsData = [
-        { sharelistId: 'sharelist-group1', groupCount: 15, startId: 1001 },
-        { sharelistId: 'sharelist-group2', groupCount: 14, startId: 2001 },
-        { sharelistId: 'sharelist-group3', groupCount: 14, startId: 3001 },
-        { sharelistId: 'sharelist-group4', groupCount: 13, startId: 4001 },
-        { sharelistId: 'sharelist-group5', groupCount: 13, startId: 5001 },
-        { sharelistId: 'sharelist-group6', groupCount: 13, startId: 6001 },
-        { sharelistId: 'sharelist-group7', groupCount: 14, startId: 7001 },
-        { sharelistId: 'sharelist-group8', groupCount: 14, startId: 8001 },
-        { sharelistId: 'sharelist-group9', groupCount: 14, startId: 9001 },
-        { sharelistId: 'sharelist-group10', groupCount: 15, startId: 10001 },
-        { sharelistId: 'sharelist-group11', groupCount: 14, startId: 11001 },
-        { sharelistId: 'sharelist-group12', groupCount: 14, startId: 12001 },
-        { sharelistId: 'sharelist-group13', groupCount: 8, startId: 13001 },
-        { sharelistId: 'sharelist-group14', groupCount: 9, startId: 14001 },
-        { sharelistId: 'sharelist-group15', groupCount: 9, startId: 15001 },
-        { sharelistId: 'sharelist-group16', groupCount: 9, startId: 16001 },
-        { sharelistId: 'sharelist-group17', groupCount: 8, startId: 17001 },
-        { sharelistId: 'sharelist-group18', groupCount: 9, startId: 18001 },
-        { sharelistId: 'sharelist-group19', groupCount: 9, startId: 19001 },
-        { sharelistId: 'sharelist-group20', groupCount: 10, startId: 20001 },
-        { sharelistId: 'sharelist-group21', groupCount: 8, startId: 21001 },
-        { sharelistId: 'sharelist-group22', groupCount: 8, startId: 22001 },
-        { sharelistId: 'sharelist-group23', groupCount: 9, startId: 23001 },
-        { sharelistId: 'sharelist-group24', groupCount: 9, startId: 24001 },
-        ];// 新規人格E.G.Oを追加するときはここを変更する
+        const namelistSources = [
+            "https://raw.githubusercontent.com/394ast/limbus.tiermaker/maim/namelist.json",
+            "https://raw.githubusercontent.com/394ast/limbus.tiermaker/main/namelist.json",
+        ];
+        const namelistData = await loadNamelist(namelistSources);
+        const idMetadataMap = new Map(namelistData.map((item) => [item.id, item]));
+        const groupsData = Array.from({ length: 24 }, (_, index) => {
+            const groupNumber = index + 1;
+            const ids = namelistData
+                .filter((item) => Math.floor(item.id / 1000) === groupNumber)
+                .map((item) => item.id)
+                .sort((a, b) => a - b);
+
+            return {
+                sharelistId: `sharelist-group${groupNumber}`,
+                startId: ids[0] ?? groupNumber * 1000 + 1,
+                groupCount: ids.length,
+            };
+        });
 
         groupsData.forEach(({ sharelistId, groupCount, startId }) => {
             const sharelistGroup = document.getElementById(sharelistId);
@@ -294,6 +344,20 @@
                 const container = document.createElement('div');
                 container.classList.add('container');
                 container.dataset.id = startId + i;
+                const itemMetadata = idMetadataMap.get(startId + i);
+                if (itemMetadata) {
+                    container.dataset.name1 = itemMetadata.name1;
+                    container.dataset.name2 = itemMetadata.name2;
+                    container.dataset.season = itemMetadata.season;
+                    container.dataset.rank = itemMetadata.rank;
+                    container.dataset.time = itemMetadata.time;
+                }
+
+                const itemRow = document.createElement('div');
+                itemRow.classList.add('item-row');
+
+                const imageStack = document.createElement('div');
+                imageStack.classList.add('image-stack');
 
                 // 画像要素を作成
                 const img = document.createElement('img');
@@ -310,8 +374,25 @@
                 img.src = imgURL(img.dataset.id, altValue);
                 overlay.src = overlayURL(overlay.dataset.id, altValue);
 
-                container.appendChild(img);
-                container.appendChild(overlay);
+                imageStack.appendChild(img);
+                imageStack.appendChild(overlay);
+                itemRow.appendChild(imageStack);
+
+                const stateButtonGroup = document.createElement('div');
+                stateButtonGroup.classList.add('state-button-group');
+                const buttonPrefix = startId + i < 13000 ? '同期' : '解析';
+
+                for (let state = maxState; state >= 0; state--) {
+                    const stateButton = document.createElement('button');
+                    stateButton.type = 'button';
+                    stateButton.classList.add('state-btn');
+                    stateButton.dataset.state = state;
+                    stateButton.textContent = state === 0 ? '未所持' : `${buttonPrefix}${toRoman(state)}`;
+                    stateButtonGroup.appendChild(stateButton);
+                }
+
+                itemRow.appendChild(stateButtonGroup);
+                container.appendChild(itemRow);
                 
                 // Lvの入力フィールド(条件付きで追加)
                 if (startId + i < 13000) {
@@ -352,10 +433,65 @@
                     container.appendChild(lvContainer);
                 }
 
+                const metaLine = document.createElement('div');
+                metaLine.classList.add('meta-line');
+
+                const metaName1 = document.createElement('div');
+                metaName1.classList.add('meta-item', 'meta-name1');
+                const metaName2 = document.createElement('div');
+                metaName2.classList.add('meta-item', 'meta-name2');
+                const metaSeason = document.createElement('div');
+                metaSeason.classList.add('meta-item', 'meta-season');
+
+                metaLine.appendChild(metaName1);
+                metaLine.appendChild(metaName2);
+                metaLine.appendChild(metaSeason);
+                container.appendChild(metaLine);
+
                 // sharelistGroupに追加
                 sharelistGroup.appendChild(container);
             }
         });
+
+        async function loadNamelist(sources) {
+            for (const source of sources) {
+                try {
+                    const response = await fetch(source);
+                    if (!response.ok) {
+                        continue;
+                    }
+
+                    const json = await response.json();
+                    const normalized = normalizeNamelist(json);
+                    if (normalized.length > 0) {
+                        return normalized;
+                    }
+                } catch (error) {
+                    console.warn(`Failed to load namelist from ${source}`, error);
+                }
+            }
+
+            console.error("namelist.json の取得に失敗しました。");
+            return [];
+        }
+
+        function normalizeNamelist(rawData) {
+            const sourceArray = Array.isArray(rawData)
+                ? rawData
+                : Object.values(rawData ?? {});
+
+            return sourceArray
+                .map((item) => ({
+                    id: Number(item.id),
+                    name1: item.name1 ?? "",
+                    name2: item.name2 ?? "",
+                    season: item.season ?? "",
+                    rank: item.rank ?? "",
+                    time: item.time ?? "",
+                }))
+                .filter((item) => Number.isInteger(item.id))
+                .sort((a, b) => a.id - b.id);
+        }
 
         function imgURL(id, alt) {
             const baseImageUrl = "https://raw.githubusercontent.com/394ast/limbus.sharetool/main/";
@@ -395,6 +531,33 @@
         function syncAlt(img, overlay, altValue) {
             img.alt = altValue;
             overlay.alt = altValue;
+        }
+
+        function toRoman(number) {
+            const romanMap = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X'];
+            return romanMap[number - 1] ?? number;
+        }
+
+        function getStateSwitchMode() {
+            return document.querySelector('input[name="state-switch-mode"]:checked')?.value ?? 'image';
+        }
+
+        function applyState(container, nextState) {
+            const img = container.querySelector('.img');
+            const overlay = container.querySelector('.overlay');
+            syncAlt(img, overlay, nextState);
+            img.src = imgURL(img.dataset.id, nextState);
+            overlay.src = overlayURL(overlay.dataset.id, nextState);
+            syncBetweenGroups(img); //個別グローバル同期
+            updateUrl();
+        }
+
+        function updateStateSwitchModeUI() {
+            const mode = getStateSwitchMode();
+            document.querySelectorAll('.state-button-group').forEach((group) => {
+                group.style.display = mode === 'button' ? 'flex' : 'none';
+            });
+            updateContainerMarginsForMetadata();
         }
 
         const groupNames = [
@@ -463,7 +626,8 @@
         const imgParam = urlParams.get("img");
         const lvParam = urlParams.get("lv");
         if(imgParam){
-            const decompressedImg = decompressImgData(imgParam);
+            const { codingDiffId, encodedImgData } = parseImgParam(imgParam);
+            const decompressedImg = decompressImgData(encodedImgData, codingDiffId);
             restoreImg(decompressedImg);
         }
         if(lvParam){
@@ -489,6 +653,8 @@
                 });
             }
         });
+        updateMetadataLabels();
+        updateStateSwitchModeUI();
 
         // ページが読み込まれたときにもURLを更新
         updateUrl();
@@ -497,23 +663,33 @@
         // クリック時の状態変更処理
         document.querySelectorAll(".container").forEach(container => {
             container.addEventListener("click", (event) => {
-            // クリックされたのがlvだった場合、親のクリックイベントを発火させない
-            if (event.target.classList.contains("lvinput") || event.target.classList.contains("lvtext")) {
-                event.stopPropagation();
-                return;
-            }
-            const img = container.querySelector(".img");
-            const overlay = container.querySelector(".overlay");
-            const id = container.dataset.id;
-            let currentState = parseInt(img.alt, 10) || 0; // alt属性から現在の状態を取得
-            currentState = (currentState + 1) % (maxState + 1); // 状態を循環
-            syncAlt(img, overlay, currentState);
+                if (event.target.classList.contains("lvinput") || event.target.classList.contains("lvtext")) {
+                    event.stopPropagation();
+                    return;
+                }
 
-            img.src = imgURL(img.dataset.id, currentState);
-            overlay.src = overlayURL(overlay.dataset.id, currentState);
+                const mode = getStateSwitchMode();
+                if (mode === 'lock') {
+                    return;
+                }
 
-            syncBetweenGroups(img); //個別グローバル同期
-            updateUrl(); // URLを更新
+                if (event.target.classList.contains('state-btn')) {
+                    if (mode !== 'button') {
+                        return;
+                    }
+                    const selectedState = parseInt(event.target.dataset.state, 10);
+                    applyState(container, selectedState);
+                    return;
+                }
+
+                if (mode !== 'image') {
+                    return;
+                }
+
+                const img = container.querySelector(".img");
+                let currentState = parseInt(img.alt, 10) || 0; // alt属性から現在の状態を取得
+                currentState = (currentState + 1) % (maxState + 1); // 状態を循環
+                applyState(container, currentState);
             });
         });
 
@@ -532,19 +708,12 @@
 
         //URL更新関数
         function updateUrl() {
-            // ラジオボタンが選択されている場合、メッセージを表示して処理を停止
-            const selectedRadio = document.querySelector('input[name="sort"]:checked');
-            if (selectedRadio) {
-                document.querySelector('.share-url-textarea').value = "ソート中は共有用URLを生成できません。「並びを初期化する」ボタンを押してください。";
-                document.querySelector('.shortened-url-textarea').value = "ソート中は共有用URLを生成できません。「並びを初期化する」ボタンを押してください。";
-                return; // URL生成処理を中止
-            }
-            
             const enableLv = document.getElementById("enableLv").checked;
             const baseUrl = "https://394ast.github.io/limbus.sharetool/";
             const compressedImgData = compressImgData();
             const encodedImgData = toUrlSafeBase64(compressedImgData);
-            let url = `${baseUrl}?img=${encodedImgData}`;
+            const encodedImgParam = changecodingDIffID === 1 ? `1:${encodedImgData}` : encodedImgData;
+            let url = `${baseUrl}?img=${encodedImgParam}`;
     
             // lvが有効なら、lvのデータも追加
             if(enableLv){
@@ -567,48 +736,66 @@
             let count = 1;
             for (let i = 1; i < data.length; i++) {
                 if (data[i] === data[i - 1]) {
-                count++;
-            } else {
-                result += count.toString(36) + data[i - 1]; // 36進数で表記
-            count = 1;
+                    count++;
+                } else {
+                    const encodedCount = changecodingDIffID === 1
+                        ? count.toString(36).padStart(2, '0')
+                        : count.toString(36);
+                    result += `${encodedCount}${data[i - 1]}`; // 36進数で表記
+                    count = 1;
+                }
             }
-            }
-        // 最後の部分を追加、最後の文字が'0'の場合は追加しない
+
+            // 最後の部分を追加、最後の文字が'0'の場合は追加しない
             if (data[data.length - 1] !== '0') {
-            result += count.toString(36) + data[data.length - 1];
+                const encodedCount = changecodingDIffID === 1
+                    ? count.toString(36).padStart(2, '0')
+                    : count.toString(36);
+                result += `${encodedCount}${data[data.length - 1]}`;
             }
-        return result;
+            return result;
         }
         
         // 解凍関数（ランレングス圧縮の逆）
-        function runLengthDecode(encodedData) {
+        function runLengthDecode(encodedData, codingDiffId = changecodingDIffID) {
             let result = [];
             let i = 0;
+            const countLength = codingDiffId === 1 ? 2 : 1;
+
             while (i < encodedData.length) {
-                let count = parseInt(encodedData[i],36); // 
-                let state = encodedData[i + 1];
+                const count = parseInt(encodedData.slice(i, i + countLength), 36);
+                const state = encodedData[i + countLength];
                 for (let j = 0; j < count; j++) {
                     result.push(state);
                 }
-                i += 2; // 次のペアへ
+                i += countLength + 1; // 次のペアへ
             }
-        return result;
+            return result;
         }
 
         // 圧縮処理
         function compressImgData() {
             const separator = '-'; // グループを区切るセパレータ
-            // グループごとの状態を取得し、連結して返す
-            const groupStates = groupsData.map(({ sharelistId }) => {
-                const sharelistGroup = document.getElementById(sharelistId);
-                const images = sharelistGroup.querySelectorAll(".img");
-                const states = Array.from(images).map(img => parseInt(img.alt, 10) || 0);
-                const allstates = states.join(""); // グループ内の状態を連結
-                const compressedImgDataR =  `R${runLengthEncode(allstates)}`;
+            // ID帯（1001〜2000, 2001〜3000 ...）ごとに、id昇順で24グループを作成
+            const groupStates = Array.from({ length: 24 }, (_, index) => {
+                const groupNumber = index + 1;
+                const minId = groupNumber * 1000 + 1;
+                const maxId = (groupNumber + 1) * 1000;
+
+                const states = Array.from(document.querySelectorAll('.sharelist-group .img'))
+                    .filter((img) => {
+                        const id = Number(img.dataset.id);
+                        return id >= minId && id <= maxId;
+                    })
+                    .sort((a, b) => Number(a.dataset.id) - Number(b.dataset.id))
+                    .map((img) => parseInt(img.alt, 10) || 0);
+
+                const allstates = states.join(''); // グループ内の状態を連結
+                const compressedImgDataR = `R${runLengthEncode(allstates)}`;
                 const compressedImgData0 = allstates.replace(/0+$/, '');
                 return compressedImgDataR.length < compressedImgData0.length ? compressedImgDataR : compressedImgData0;
-            });    
-        return groupStates.join(separator); // グループ間をseparatorで区切る
+            });
+            return groupStates.join(separator); // グループ間をseparatorで区切る
         }
 
         function compresslvData() {
@@ -645,7 +832,7 @@
         }
         
         // 解凍処理
-        function decompressImgData(encodedImgData) {
+        function decompressImgData(encodedImgData, codingDiffId = changecodingDIffID) {
             const decodedImgData = fromUrlSafeBase64(encodedImgData);
             const groups = decodedImgData.split('-');
             const decompressedImg = [];
@@ -657,7 +844,7 @@
                 if (group) { // 空でないグループのみ処理
                     if (group.startsWith("R")) { // group の先頭が 'R' の場合
                         const modifiedGroup = group.slice(1); // 先頭の 'R' を削除
-                        decoded = runLengthDecode(modifiedGroup);
+                        decoded = runLengthDecode(modifiedGroup, codingDiffId);
                     } else {
                         decoded = [...group]; // group をそのまま文字配列に変換
                     }
@@ -818,6 +1005,18 @@
 
         // ページのリサイズ時にも調整
         window.addEventListener('resize', adjustTextareaHeight);
+
+        function parseImgParam(imgParam) {
+            const match = imgParam.match(/^(\d+):(.*)$/);
+            if (!match) {
+                return { codingDiffId: 0, encodedImgData: imgParam };
+            }
+
+            return {
+                codingDiffId: Number(match[1]),
+                encodedImgData: match[2],
+            };
+        }
 
         // URLセーフBase64エンコード関数
         function toUrlSafeBase64(data) {
@@ -1105,7 +1304,10 @@
                         }
                     });
                 }
-                document.getElementById('blink-sort-reset').style.display = 'block'; // 下の方にリセットボタンを表示
+                const blinkSortResetButton = document.getElementById('blink-sort-reset');
+                if (blinkSortResetButton) {
+                    blinkSortResetButton.style.display = 'block'; // 下の方にリセットボタンを表示
+                }
                 updateUrl();
             });
         });
@@ -1121,12 +1323,18 @@
                 sortContainers(group.id, 'data-id', 'asc');
             });
             showSharelistGroup();
-            document.getElementById('blink-sort-reset').style.display = 'none';
+            const blinkSortResetButton = document.getElementById('blink-sort-reset');
+            if (blinkSortResetButton) {
+                blinkSortResetButton.style.display = 'none';
+            }
             updateUrl();
         }
 
         document.getElementById('sort-reset').addEventListener('click', resetSorting);
-        document.getElementById('blink-sort-reset').addEventListener('click', resetSorting);
+        const blinkSortResetButton = document.getElementById('blink-sort-reset');
+        if (blinkSortResetButton) {
+            blinkSortResetButton.addEventListener('click', resetSorting);
+        }
 
         const imgSizeForm = document.getElementById('imgSizeForm');
         const customWidthInput = document.getElementById('customWidth');
@@ -1162,6 +1370,7 @@
             const containers = document.querySelectorAll('.container');
             const imgs = document.querySelectorAll('.img');
             const overlays = document.querySelectorAll('.overlay');
+            const imageStacks = document.querySelectorAll('.image-stack');
             const lvTexts = document.querySelectorAll('.lvtext');
             containers.forEach(container => {
                 container.style.width = `${width}px`;
@@ -1169,6 +1378,10 @@
             imgs.forEach(img => {
                 img.style.width = `${width}px`;
                 img.style.height = `${width}px`;
+            });
+            imageStacks.forEach((stack) => {
+                stack.style.width = `${width}px`;
+                stack.style.height = `${width}px`;
             });
             overlays.forEach(overlay => {
                 overlay.style.width = `${(width * 6) / 7}px`;
@@ -1179,7 +1392,65 @@
             lvTexts.forEach(lvText => {
                 lvText.style.display = width < 80 ? 'none' : 'flex';
             });
+            updateContainerMarginsForMetadata();
         }   //画像サイズを調整する関数
+
+        function updateMetadataLabels() {
+            const showName1 = document.getElementById('show-name1').checked;
+            const showName2 = document.getElementById('show-name2').checked;
+            const showSeason = document.getElementById('show-season').checked;
+
+            document.querySelectorAll('.container').forEach(container => {
+                const metaLine = container.querySelector('.meta-line');
+                if (!metaLine) {
+                    return;
+                }
+
+                const metaName1 = metaLine.querySelector('.meta-name1');
+                const metaName2 = metaLine.querySelector('.meta-name2');
+                const metaSeason = metaLine.querySelector('.meta-season');
+
+                const showName1Line = showName1 && Boolean(container.dataset.name1);
+                const showName2Line = showName2 && Boolean(container.dataset.name2);
+                const showSeasonLine = showSeason && Boolean(container.dataset.season);
+
+                metaName1.textContent = showName1Line ? container.dataset.name1 : '';
+                metaName2.textContent = showName2Line ? container.dataset.name2 : '';
+                metaSeason.textContent = showSeasonLine ? container.dataset.season : '';
+
+                metaName1.style.display = showName1Line ? 'block' : 'none';
+                metaName2.style.display = showName2Line ? 'block' : 'none';
+                metaSeason.style.display = showSeasonLine ? 'block' : 'none';
+
+                metaLine.style.display = (showName1Line || showName2Line || showSeasonLine) ? 'block' : 'none';
+            });
+
+            updateContainerMarginsForMetadata();
+        }
+
+        function updateContainerMarginsForMetadata() {
+            document.querySelectorAll('.container').forEach((container) => {
+                const img = container.querySelector('.img');
+                const metaItems = container.querySelectorAll('.meta-item');
+                if (!img || metaItems.length === 0) {
+                    return;
+                }
+
+                const imageWidth = img.clientWidth || parseInt(img.style.width, 10) || 80;
+                const maxTextWidth = Array.from(metaItems)
+                    .filter((item) => item.style.display !== 'none')
+                    .reduce((max, item) => Math.max(max, item.scrollWidth), 0);
+
+                const stateButtonGroup = container.querySelector('.state-button-group');
+                const mode = getStateSwitchMode();
+                const buttonWidth = (mode === 'button' && stateButtonGroup)
+                    ? stateButtonGroup.scrollWidth + 4
+                    : 0;
+
+                const extraMargin = Math.max(0, maxTextWidth - imageWidth);
+                container.style.marginRight = `${extraMargin + buttonWidth + 6}px`;
+            });
+        }
 
         function updateImages() {
             document.querySelectorAll(".container").forEach(container => {
@@ -1203,6 +1474,17 @@
                 overlay.style.display = isChecked ? "none" : "block";
             });
         });
+
+        ['show-name1', 'show-name2', 'show-season'].forEach((id) => {
+            document.getElementById(id).addEventListener('change', updateMetadataLabels);
+        });
+
+        document.querySelectorAll('input[name="state-switch-mode"]').forEach((radio) => {
+            radio.addEventListener('change', updateStateSwitchModeUI);
+        });
+
+        updateMetadataLabels();
+        updateStateSwitchModeUI();
 
     });
     </script>
