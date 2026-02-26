@@ -243,7 +243,6 @@
     <div class="global-group" id="EGO-group"></div>
     <br>
     <p>共有用URL: <textarea class="share-url-textarea" readonly></textarea></p>
-    <button id="blink-sort-reset">並びを初期化する</button>
     <button id="copyButton">共有用URLをコピー</button>
     <br>
     <br>
@@ -1171,7 +1170,10 @@
                         }
                     });
                 }
-                document.getElementById('blink-sort-reset').style.display = 'block'; // 下の方にリセットボタンを表示
+                const blinkSortResetButton = document.getElementById('blink-sort-reset');
+                if (blinkSortResetButton) {
+                    blinkSortResetButton.style.display = 'block'; // 下の方にリセットボタンを表示
+                }
                 updateUrl();
             });
         });
@@ -1187,12 +1189,18 @@
                 sortContainers(group.id, 'data-id', 'asc');
             });
             showSharelistGroup();
-            document.getElementById('blink-sort-reset').style.display = 'none';
+            const blinkSortResetButton = document.getElementById('blink-sort-reset');
+            if (blinkSortResetButton) {
+                blinkSortResetButton.style.display = 'none';
+            }
             updateUrl();
         }
 
         document.getElementById('sort-reset').addEventListener('click', resetSorting);
-        document.getElementById('blink-sort-reset').addEventListener('click', resetSorting);
+        const blinkSortResetButton = document.getElementById('blink-sort-reset');
+        if (blinkSortResetButton) {
+            blinkSortResetButton.addEventListener('click', resetSorting);
+        }
 
         const imgSizeForm = document.getElementById('imgSizeForm');
         const customWidthInput = document.getElementById('customWidth');
