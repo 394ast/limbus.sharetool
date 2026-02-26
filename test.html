@@ -505,7 +505,8 @@
         const imgParam = urlParams.get("img");
         const lvParam = urlParams.get("lv");
         if(imgParam){
-            const decompressedImg = decompressImgData(imgParam);
+            const { codingDiffId, encodedImgData } = parseImgParam(imgParam);
+            const decompressedImg = decompressImgData(encodedImgData, codingDiffId);
             restoreImg(decompressedImg);
         }
         if(lvParam){
@@ -586,7 +587,8 @@
             const baseUrl = "https://394ast.github.io/limbus.sharetool/";
             const compressedImgData = compressImgData();
             const encodedImgData = toUrlSafeBase64(compressedImgData);
-            let url = `${baseUrl}?img=${encodedImgData}`;
+            const encodedImgParam = changecodingDIffID === 1 ? `1:${encodedImgData}` : encodedImgData;
+            let url = `${baseUrl}?img=${encodedImgParam}`;
     
             // lvが有効なら、lvのデータも追加
             if(enableLv){
@@ -630,10 +632,10 @@
         }
         
         // 解凍関数（ランレングス圧縮の逆）
-        function runLengthDecode(encodedData) {
+        function runLengthDecode(encodedData, codingDiffId = changecodingDIffID) {
             let result = [];
             let i = 0;
-            const countLength = changecodingDIffID === 1 ? 2 : 1;
+            const countLength = codingDiffId === 1 ? 2 : 1;
 
             while (i < encodedData.length) {
                 const count = parseInt(encodedData.slice(i, i + countLength), 36);
@@ -696,7 +698,7 @@
         }
         
         // 解凍処理
-        function decompressImgData(encodedImgData) {
+        function decompressImgData(encodedImgData, codingDiffId = changecodingDIffID) {
             const decodedImgData = fromUrlSafeBase64(encodedImgData);
             const groups = decodedImgData.split('-');
             const decompressedImg = [];
@@ -708,7 +710,7 @@
                 if (group) { // 空でないグループのみ処理
                     if (group.startsWith("R")) { // group の先頭が 'R' の場合
                         const modifiedGroup = group.slice(1); // 先頭の 'R' を削除
-                        decoded = runLengthDecode(modifiedGroup);
+                        decoded = runLengthDecode(modifiedGroup, codingDiffId);
                     } else {
                         decoded = [...group]; // group をそのまま文字配列に変換
                     }
@@ -869,6 +871,18 @@
 
         // ページのリサイズ時にも調整
         window.addEventListener('resize', adjustTextareaHeight);
+
+        function parseImgParam(imgParam) {
+            const match = imgParam.match(/^(\d+):(.*)$/);
+            if (!match) {
+                return { codingDiffId: 0, encodedImgData: imgParam };
+            }
+
+            return {
+                codingDiffId: Number(match[1]),
+                encodedImgData: match[2],
+            };
+        }
 
         // URLセーフBase64エンコード関数
         function toUrlSafeBase64(data) {
