@@ -183,7 +183,23 @@
             border-radius: 4px;
             display: inline-block;
         }
-        
+
+
+        .id-range-filters {
+            border: 2px solid #999;
+            padding: 8px 16px;
+            margin: 6px 0 10px 0;
+            border-radius: 4px;
+            display: inline-block;
+        }
+
+        .filter-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px 12px;
+            margin-top: 8px;
+        }
+
     </style>
 </head>
 
@@ -259,6 +275,17 @@
     <input type="radio" name="state-switch-mode" value="lock">切り替えをロック<br>
         
     <br>
+
+    <details id="identityFilterDetails" class="id-range-filters">
+        <summary>人格フィルター</summary>
+        <div id="identityRangeFilters" class="filter-options"></div>
+    </details>
+
+    <details id="egoFilterDetails" class="id-range-filters">
+        <summary>E.G.Oフィルター</summary>
+        <div id="egoRangeFilters" class="filter-options"></div>
+    </details>
+
     <div class="sharelist-group" id="sharelist-group1"></div>
     <div class="custom-space"></div>
     <div class="reset" id ="resetButton1"></div>
@@ -381,6 +408,7 @@
                 const container = document.createElement('div');
                 container.classList.add('container');
                 container.dataset.id = startId + i;
+                container.dataset.type = startId + i < 13000 ? 'identity' : 'ego';
                 const itemMetadata = idMetadataMap.get(startId + i);
                 const itemMaxState = itemMetadata?.maxState ?? defaultMaxState;
                 if (itemMetadata) {
@@ -492,6 +520,87 @@
                 sharelistGroup.appendChild(container);
             }
         });
+
+        initializeRangeFilters(namelistData);
+        applyRangeFilters();
+
+
+        function initializeRangeFilters(namelistData) {
+            const identityRanks = [...new Set(
+                namelistData
+                    .filter((item) => Number(item.id) < 13000)
+                    .map((item) => item.rank)
+                    .filter((rank) => rank)
+            )];
+            const egoRanks = [...new Set(
+                namelistData
+                    .filter((item) => Number(item.id) >= 13000)
+                    .map((item) => item.rank)
+                    .filter((rank) => rank)
+            )];
+
+            renderRangeFilterOptions('identityRangeFilters', identityRanks, 'identity-rank');
+            renderRangeFilterOptions('egoRangeFilters', egoRanks, 'ego-rank');
+
+            document.querySelectorAll('#identityRangeFilters input[type="checkbox"], #egoRangeFilters input[type="checkbox"]').forEach((checkbox) => {
+                checkbox.addEventListener('change', () => {
+                    applyRangeFilters();
+                    updateUrl();
+                });
+            });
+        }
+
+        function renderRangeFilterOptions(containerId, values, namePrefix) {
+            const container = document.getElementById(containerId);
+            if (!container) {
+                return;
+            }
+
+            if (values.length === 0) {
+                container.textContent = 'フィルター項目がありません';
+                return;
+            }
+
+            values.forEach((value, index) => {
+                const label = document.createElement('label');
+                label.style.display = 'inline-flex';
+                label.style.alignItems = 'center';
+                label.style.gap = '4px';
+
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.name = `${namePrefix}-${index}`;
+                checkbox.value = value;
+                checkbox.checked = true;
+
+                label.appendChild(checkbox);
+                label.appendChild(document.createTextNode(value));
+                container.appendChild(label);
+            });
+        }
+
+        function applyRangeFilters() {
+            const activeIdentityRanks = new Set(
+                [...document.querySelectorAll('#identityRangeFilters input[type="checkbox"]:checked')].map((checkbox) => checkbox.value)
+            );
+            const activeEgoRanks = new Set(
+                [...document.querySelectorAll('#egoRangeFilters input[type="checkbox"]:checked')].map((checkbox) => checkbox.value)
+            );
+
+            document.querySelectorAll('.container').forEach((container) => {
+                const rank = container.dataset.rank;
+                if (!rank) {
+                    container.style.display = 'flex';
+                    return;
+                }
+
+                if (container.dataset.type === 'identity') {
+                    container.style.display = activeIdentityRanks.has(rank) ? 'flex' : 'none';
+                } else {
+                    container.style.display = activeEgoRanks.has(rank) ? 'flex' : 'none';
+                }
+            });
+        }
 
         async function loadNamelist(sources) {
             for (const source of sources) {
@@ -1379,6 +1488,8 @@
             if (specificIdCheckbox.checked) {
                 toggleDisplay((_, id) => id % 1000 === 1 && id >= 1001 && id <= 24001);
             }
+
+            applyRangeFilters();
         }
 
         altZeroCheckbox.addEventListener('change', () => handleCheckboxChange(altZeroCheckbox, altFlexCheckbox));
