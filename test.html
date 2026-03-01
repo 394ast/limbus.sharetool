@@ -221,6 +221,8 @@
         <button class="reset" id="E.G.O-reset3">E.G.Oを全て解析3に</button>
         <button class="reset" id="Identity-reset4">人格を全て同期4に</button>
         <button class="reset" id="E.G.O-reset4">E.G.Oを全て解析4に</button>
+        <button class="reset" id="Identity-resetMax">人格を同期最大に</button>
+        <button class="reset" id="E.G.O-resetMax">E.G.Oを解析最大に</button>
         <br>
     </div>
     <br>
@@ -618,6 +620,11 @@
                 }
                 resetDiv.appendChild(button);
                 }
+
+                const maxButton = document.createElement('button');
+                maxButton.id = `reset${index + 1}-max`;
+                maxButton.textContent = index + 1 <= 12 ? '全て同期最大' : '全て解析最大';
+                resetDiv.appendChild(maxButton);
             }
         });
 
@@ -997,6 +1004,21 @@
             });
             updateUrl();
         }
+
+        function resetStateToMax(startId, endId){
+            const images = document.querySelectorAll('img');
+            images.forEach(img => {
+                const id = parseInt(img.dataset.id, 10);
+                if (id >= startId && id <= endId) {
+                    const maxStateById = getMaxStateById(id);
+                    const overlay = document.querySelector(`img[data-id="${id}"].overlay`);
+                    syncAlt(img, overlay, maxStateById);
+                    img.src = imgURL(id, maxStateById);
+                    overlay.src = overlayURL(id, maxStateById);
+                }
+            });
+            updateUrl();
+        }
         
         document.getElementById(`reset0-1`).addEventListener('click', () => resetPrimary(1,1001,25000));
         document.getElementById(`reset0-2`).addEventListener('click', () => resetPrimary(2,1001,25000));
@@ -1005,10 +1027,12 @@
         document.getElementById("Identity-reset2").addEventListener("click", () => resetState(2,1001,13000));
         document.getElementById("Identity-reset3").addEventListener("click", () => resetState(3,1001,13000));
         document.getElementById("Identity-reset4").addEventListener("click", () => resetState(4,1001,13000));
+        document.getElementById("Identity-resetMax").addEventListener("click", () => resetStateToMax(1001,13000));
         document.getElementById("E.G.O-reset1").addEventListener("click", () => resetState(1,13001,25000));
         document.getElementById("E.G.O-reset2").addEventListener("click", () => resetState(2,13001,25000));
         document.getElementById("E.G.O-reset3").addEventListener("click", () => resetState(3,13001,25000));
         document.getElementById("E.G.O-reset4").addEventListener("click", () => resetState(4,13001,25000));
+        document.getElementById("E.G.O-resetMax").addEventListener("click", () => resetStateToMax(13001,25000));
 
         for (let X = 1; X <= 24; X++) {  // グループ1〜24
             for (let Y = 0; Y <= 4; Y++) {  // ボタン0〜4
@@ -1019,6 +1043,13 @@
                         resetState(Y, 1000 * X + 1, 1000 * (X + 1));
                     });
                 }
+            }
+
+            const maxButton = document.getElementById(`reset${X}-max`);
+            if (maxButton) {
+                maxButton.addEventListener('click', () => {
+                    resetStateToMax(1000 * X + 1, 1000 * (X + 1));
+                });
             }
         }
 
