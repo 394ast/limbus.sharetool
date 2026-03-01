@@ -6,9 +6,15 @@
     <title>リンバス所持人格E.G.O共有ツール</title>
     <style>
         #buttons-container {
-        display: grid; /* グリッドレイアウトを使用 */
-        grid-template-columns: repeat(2, max-content); /* 2列に分割 */
-        gap: 10px; /* ボタン間の余白 */
+            display: flex;
+            gap: 10px;
+            align-items: flex-start;
+        }
+
+        .reset-column {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
         }
 
         .sharelist-group {
@@ -213,17 +219,20 @@
     <button class="reset" id="reset0-2">初期人格、初期E.G.Oのみ同期/解析2で所持（2章攻略中）</button>
     <button class="reset" id="reset0-3">初期人格、初期E.G.Oのみ同期/解析3で所持（3章以降）</button>
     <div id="buttons-container">
-        <button class="reset" id="Identity-reset1">人格を全て同期1に</button>
-        <button class="reset" id="E.G.O-reset1">E.G.Oを全て解析1に</button>
-        <button class="reset" id="Identity-reset2">人格を全て同期2に</button>
-        <button class="reset" id="E.G.O-reset2">E.G.Oを全て解析2に</button>
-        <button class="reset" id="Identity-reset3">人格を全て同期3に</button>
-        <button class="reset" id="E.G.O-reset3">E.G.Oを全て解析3に</button>
-        <button class="reset" id="Identity-reset4">人格を全て同期4に</button>
-        <button class="reset" id="E.G.O-reset4">E.G.Oを全て解析4に</button>
-        <button class="reset" id="Identity-resetMax">人格を同期最大に</button>
-        <button class="reset" id="E.G.O-resetMax">E.G.Oを解析最大に</button>
-        <br>
+        <div class="reset-column" id="identity-reset-column">
+            <button class="reset" id="Identity-reset1">人格を全て同期1に</button>
+            <button class="reset" id="Identity-reset2">人格を全て同期2に</button>
+            <button class="reset" id="Identity-reset3">人格を全て同期3に</button>
+            <button class="reset" id="Identity-reset4">人格を全て同期4に</button>
+            <button id="Identity-resetMax" style="display: none;">人格を同期最大に</button>
+        </div>
+        <div class="reset-column" id="ego-reset-column">
+            <button class="reset" id="E.G.O-reset1">E.G.Oを全て解析1に</button>
+            <button class="reset" id="E.G.O-reset2">E.G.Oを全て解析2に</button>
+            <button class="reset" id="E.G.O-reset3">E.G.Oを全て解析3に</button>
+            <button class="reset" id="E.G.O-reset4">E.G.Oを全て解析4に</button>
+            <button class="reset" id="E.G.O-resetMax">E.G.Oを解析最大に</button>
+        </div>
     </div>
     <br>
     強化段階の切り替え方法:
@@ -624,6 +633,9 @@
                 const maxButton = document.createElement('button');
                 maxButton.id = `reset${index + 1}-max`;
                 maxButton.textContent = index + 1 <= 12 ? '全て同期最大' : '全て解析最大';
+                if (index + 1 <= 12) {
+                    maxButton.style.display = 'none';
+                }
                 resetDiv.appendChild(maxButton);
             }
         });
