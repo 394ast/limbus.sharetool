@@ -350,6 +350,7 @@
             "https://raw.githubusercontent.com/394ast/limbus.tiermaker/main/namelist.json",
         ];
         const namelistData = await loadNamelist(namelistSources);
+        preloadImageAssets(namelistData);
         const idMetadataMap = new Map(namelistData.map((item) => [item.id, item]));
         const groupsData = Array.from({ length: 24 }, (_, index) => {
             const groupNumber = index + 1;
@@ -505,6 +506,38 @@
             console.error("namelist.json の取得に失敗しました。");
             return [];
         }
+
+        function preloadImageAssets(namelistData) {
+            const baseImageUrl = "https://raw.githubusercontent.com/394ast/limbus.sharetool/main/";
+            const preloadTargets = [];
+
+            namelistData.forEach((item) => {
+                if (!Number.isInteger(item.id)) {
+                    return;
+                }
+
+                if (item.id < 13000) {
+                    preloadTargets.push(
+                        `${baseImageUrl}Identities.After/${item.id}.3.jpg`,
+                        `${baseImageUrl}Identities.Before/${item.id}.1.jpg`,
+                        `${baseImageUrl}Identities.Mono.After/${item.id}.3.mono.jpg`,
+                        `${baseImageUrl}Identities.Mono.Before/${item.id}.1.mono.jpg`
+                    );
+                } else {
+                    preloadTargets.push(
+                        `${baseImageUrl}EGO/${item.id}.jpg`,
+                        `${baseImageUrl}EGO.Mono/${item.id}.mono.jpg`
+                    );
+                }
+            });
+
+            const uniqueTargets = [...new Set(preloadTargets)];
+            uniqueTargets.forEach((src) => {
+                const preloadImage = new Image();
+                preloadImage.src = src;
+            });
+        }
+
 
         function normalizeNamelist(rawData) {
             const sourceArray = Array.isArray(rawData)
