@@ -69,6 +69,16 @@
             box-sizing: border-box;
         }
 
+        .state-btn.is-inactive {
+            opacity: 0.45;
+            filter: grayscale(100%);
+        }
+
+        .state-btn.is-active {
+            opacity: 1;
+            filter: none;
+        }
+
         .img {
             width: 80px;
             height: 80px;
@@ -413,6 +423,7 @@
 
                 itemRow.appendChild(stateButtonGroup);
                 container.appendChild(itemRow);
+                updateStateButtonHighlight(container);
                 
                 // Lvの入力フィールド(条件付きで追加)
                 if (startId + i < 13000) {
@@ -565,6 +576,17 @@
             return document.querySelector('input[name="state-switch-mode"]:checked')?.value ?? 'image';
         }
 
+        function updateStateButtonHighlight(container) {
+            const img = container.querySelector('.img');
+            const currentState = parseInt(img?.alt, 10) || 0;
+            container.querySelectorAll('.state-btn').forEach((button) => {
+                const buttonState = parseInt(button.dataset.state, 10);
+                const isActive = buttonState === currentState;
+                button.classList.toggle('is-active', isActive);
+                button.classList.toggle('is-inactive', !isActive);
+            });
+        }
+
         function getMaxStateById(id) {
             const numericId = Number(id);
             const maxStateFromMap = idMetadataMap.get(numericId)?.maxState;
@@ -590,6 +612,7 @@
             syncAlt(img, overlay, clampedState);
             img.src = imgURL(img.dataset.id, clampedState);
             overlay.src = overlayURL(overlay.dataset.id, clampedState);
+            updateStateButtonHighlight(container);
             syncBetweenGroups(img); //個別グローバル同期
             updateUrl();
         }
@@ -997,6 +1020,10 @@
                 syncAlt(img, overlay, currentState);
                 img.src = imgURL(id, currentState);
                 overlay.src = overlayURL(id, currentState);
+                const container = img.closest('.container');
+                if (container) {
+                    updateStateButtonHighlight(container);
+                }
                 }
             });
             updateUrl();
@@ -1012,6 +1039,10 @@
                     syncAlt(img, overlay, clampedState);
                     img.src = imgURL(id, clampedState);
                     overlay.src = overlayURL(id, clampedState);
+                    const container = img.closest('.container');
+                    if (container) {
+                        updateStateButtonHighlight(container);
+                    }
                 }
             });
             updateUrl();
@@ -1027,6 +1058,10 @@
                     syncAlt(img, overlay, maxStateById);
                     img.src = imgURL(id, maxStateById);
                     overlay.src = overlayURL(id, maxStateById);
+                    const container = img.closest('.container');
+                    if (container) {
+                        updateStateButtonHighlight(container);
+                    }
                 }
             });
             updateUrl();
@@ -1223,6 +1258,7 @@
                 targetImg.alt = sourceImg.alt;
                 targetOverlay.src = sourceOverlay.src;
                 targetOverlay.alt = sourceOverlay.alt;
+                updateStateButtonHighlight(targetContainer);
             }
 
             // レベル情報を同期
@@ -1527,7 +1563,7 @@
 
                 const requiredContentWidth = Math.max(imageWidth, maxTextWidth);
                 container.style.minWidth = `${requiredContentWidth}px`;
-                container.style.marginRight = `${buttonWidth + 8}px`;
+                container.style.marginRight = mode === 'button' ? `${buttonWidth + 8}px` : '0px';
             });
         }
 
@@ -1539,6 +1575,7 @@
                 const alt = parseInt(img.alt, 10) || 0;
                 img.src = imgURL(id, alt);
                 overlay.src = overlayURL(id, alt);
+                updateStateButtonHighlight(container);
             });
         }
 
