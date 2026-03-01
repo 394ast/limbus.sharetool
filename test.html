@@ -6,9 +6,15 @@
     <title>リンバス所持人格E.G.O共有ツール</title>
     <style>
         #buttons-container {
-        display: grid; /* グリッドレイアウトを使用 */
-        grid-template-columns: repeat(2, max-content); /* 2列に分割 */
-        gap: 10px; /* ボタン間の余白 */
+            display: flex;
+            gap: 10px;
+            align-items: flex-start;
+        }
+
+        .reset-column {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
         }
 
         .sharelist-group {
@@ -61,6 +67,16 @@
             white-space: nowrap;
             width: 100%;
             box-sizing: border-box;
+        }
+
+        .state-btn.is-inactive {
+            opacity: 0.45;
+            filter: grayscale(100%);
+        }
+
+        .state-btn.is-active {
+            opacity: 1;
+            filter: none;
         }
 
         .img {
@@ -213,15 +229,20 @@
     <button class="reset" id="reset0-2">初期人格、初期E.G.Oのみ同期/解析2で所持（2章攻略中）</button>
     <button class="reset" id="reset0-3">初期人格、初期E.G.Oのみ同期/解析3で所持（3章以降）</button>
     <div id="buttons-container">
-        <button class="reset" id="Identity-reset1">人格を全て同期1に</button>
-        <button class="reset" id="E.G.O-reset1">E.G.Oを全て解析1に</button>
-        <button class="reset" id="Identity-reset2">人格を全て同期2に</button>
-        <button class="reset" id="E.G.O-reset2">E.G.Oを全て解析2に</button>
-        <button class="reset" id="Identity-reset3">人格を全て同期3に</button>
-        <button class="reset" id="E.G.O-reset3">E.G.Oを全て解析3に</button>
-        <button class="reset" id="Identity-reset4">人格を全て同期4に</button>
-        <button class="reset" id="E.G.O-reset4">E.G.Oを全て解析4に</button>
-        <br>
+        <div class="reset-column" id="identity-reset-column">
+            <button class="reset" id="Identity-reset1">人格を全て同期1に</button>
+            <button class="reset" id="Identity-reset2">人格を全て同期2に</button>
+            <button class="reset" id="Identity-reset3">人格を全て同期3に</button>
+            <button class="reset" id="Identity-reset4">人格を全て同期4に</button>
+            <button id="Identity-resetMax" style="display: none;">人格を同期最大に</button>
+        </div>
+        <div class="reset-column" id="ego-reset-column">
+            <button class="reset" id="E.G.O-reset1">E.G.Oを全て解析1に</button>
+            <button class="reset" id="E.G.O-reset2">E.G.Oを全て解析2に</button>
+            <button class="reset" id="E.G.O-reset3">E.G.Oを全て解析3に</button>
+            <button class="reset" id="E.G.O-reset4">E.G.Oを全て解析4に</button>
+            <button class="reset" id="E.G.O-resetMax">E.G.Oを解析最大に</button>
+        </div>
     </div>
     <br>
     強化段階の切り替え方法:
@@ -319,7 +340,7 @@
     <script>
     document.addEventListener("DOMContentLoaded", async () => {
         const defaultState = 4; // 初期状態
-        const maxState = 4; // 強化段階の最大値
+        const defaultMaxState = 4; // 強化段階の最大値（idごとに取得できない場合の既定値）
         const defaultLv = 0; //未所持を想定
         const maxLv = 60; //レベル上限解放時はここを書き換える
         const changecodingDIffID = 0; // 下位idが36を超えるとき手動で1に変更する
@@ -352,6 +373,7 @@
                 container.classList.add('container');
                 container.dataset.id = startId + i;
                 const itemMetadata = idMetadataMap.get(startId + i);
+                const itemMaxState = itemMetadata?.maxState ?? defaultMaxState;
                 if (itemMetadata) {
                     container.dataset.name1 = itemMetadata.name1;
                     container.dataset.name2 = itemMetadata.name2;
@@ -359,6 +381,7 @@
                     container.dataset.rank = itemMetadata.rank;
                     container.dataset.time = itemMetadata.time;
                 }
+                container.dataset.maxState = itemMaxState;
 
                 const itemRow = document.createElement('div');
                 itemRow.classList.add('item-row');
@@ -375,7 +398,7 @@
                 overlay.dataset.id = startId + i;
                 overlay.classList.add('overlay');
 
-                const altValue = defaultState;
+                const altValue = Math.min(defaultState, itemMaxState);
                 syncAlt(img, overlay, altValue);
 
                 img.src = imgURL(img.dataset.id, altValue);
@@ -389,7 +412,7 @@
                 stateButtonGroup.classList.add('state-button-group');
                 const buttonPrefix = startId + i < 13000 ? '同期' : '解析';
 
-                for (let state = maxState; state >= 0; state--) {
+                for (let state = itemMaxState; state >= 0; state--) {
                     const stateButton = document.createElement('button');
                     stateButton.type = 'button';
                     stateButton.classList.add('state-btn');
@@ -400,6 +423,7 @@
 
                 itemRow.appendChild(stateButtonGroup);
                 container.appendChild(itemRow);
+                updateStateButtonHighlight(container);
                 
                 // Lvの入力フィールド(条件付きで追加)
                 if (startId + i < 13000) {
@@ -490,6 +514,9 @@
             return sourceArray
                 .map((item) => ({
                     id: Number(item.id),
+                    maxState: Number.isInteger(Number(item.maxState))
+                        ? Number(item.maxState)
+                        : defaultMaxState,
                     name1: item.name1 ?? "",
                     name2: item.name2 ?? "",
                     season: item.season ?? "",
@@ -549,12 +576,43 @@
             return document.querySelector('input[name="state-switch-mode"]:checked')?.value ?? 'image';
         }
 
+        function updateStateButtonHighlight(container) {
+            const img = container.querySelector('.img');
+            const currentState = parseInt(img?.alt, 10) || 0;
+            container.querySelectorAll('.state-btn').forEach((button) => {
+                const buttonState = parseInt(button.dataset.state, 10);
+                const isActive = buttonState === currentState;
+                button.classList.toggle('is-active', isActive);
+                button.classList.toggle('is-inactive', !isActive);
+            });
+        }
+
+        function getMaxStateById(id) {
+            const numericId = Number(id);
+            const maxStateFromMap = idMetadataMap.get(numericId)?.maxState;
+            if (Number.isInteger(maxStateFromMap) && maxStateFromMap >= 0) {
+                return maxStateFromMap;
+            }
+            return defaultMaxState;
+        }
+
+        function clampStateById(id, state) {
+            const maxStateById = getMaxStateById(id);
+            const numericState = Number(state);
+            if (!Number.isInteger(numericState)) {
+                return 0;
+            }
+            return Math.max(0, Math.min(numericState, maxStateById));
+        }
+
         function applyState(container, nextState) {
             const img = container.querySelector('.img');
             const overlay = container.querySelector('.overlay');
-            syncAlt(img, overlay, nextState);
-            img.src = imgURL(img.dataset.id, nextState);
-            overlay.src = overlayURL(overlay.dataset.id, nextState);
+            const clampedState = clampStateById(img.dataset.id, nextState);
+            syncAlt(img, overlay, clampedState);
+            img.src = imgURL(img.dataset.id, clampedState);
+            overlay.src = overlayURL(overlay.dataset.id, clampedState);
+            updateStateButtonHighlight(container);
             syncBetweenGroups(img); //個別グローバル同期
             updateUrl();
         }
@@ -594,6 +652,14 @@
                 }
                 resetDiv.appendChild(button);
                 }
+
+                const maxButton = document.createElement('button');
+                maxButton.id = `reset${index + 1}-max`;
+                maxButton.textContent = index + 1 <= 12 ? '全て同期最大' : '全て解析最大';
+                if (index + 1 <= 12) {
+                    maxButton.style.display = 'none';
+                }
+                resetDiv.appendChild(maxButton);
             }
         });
 
@@ -696,7 +762,8 @@
 
                 const img = container.querySelector(".img");
                 let currentState = parseInt(img.alt, 10) || 0; // alt属性から現在の状態を取得
-                currentState = (currentState + 1) % (maxState + 1); // 状態を循環
+                const maxStateById = getMaxStateById(img.dataset.id);
+                currentState = (currentState + 1) % (maxStateById + 1); // 状態を循環
                 applyState(container, currentState);
             });
         });
@@ -948,10 +1015,15 @@
                     }else{
                         currentState = state ;
                     }
+                currentState = clampStateById(id, currentState);
                 const overlay = document.querySelector(`img[data-id="${id}"].overlay`);
                 syncAlt(img, overlay, currentState);
                 img.src = imgURL(id, currentState);
                 overlay.src = overlayURL(id, currentState);
+                const container = img.closest('.container');
+                if (container) {
+                    updateStateButtonHighlight(container);
+                }
                 }
             });
             updateUrl();
@@ -962,10 +1034,34 @@
             images.forEach(img => {
                 const id = parseInt(img.dataset.id, 10); 
                 if(id >= startId && id <= endId){
+                    const clampedState = clampStateById(id, state);
                     const overlay = document.querySelector(`img[data-id="${id}"].overlay`);
-                    syncAlt(img, overlay, state);
-                    img.src = imgURL(id, state);
-                    overlay.src = overlayURL(id, state);
+                    syncAlt(img, overlay, clampedState);
+                    img.src = imgURL(id, clampedState);
+                    overlay.src = overlayURL(id, clampedState);
+                    const container = img.closest('.container');
+                    if (container) {
+                        updateStateButtonHighlight(container);
+                    }
+                }
+            });
+            updateUrl();
+        }
+
+        function resetStateToMax(startId, endId){
+            const images = document.querySelectorAll('img');
+            images.forEach(img => {
+                const id = parseInt(img.dataset.id, 10);
+                if (id >= startId && id <= endId) {
+                    const maxStateById = getMaxStateById(id);
+                    const overlay = document.querySelector(`img[data-id="${id}"].overlay`);
+                    syncAlt(img, overlay, maxStateById);
+                    img.src = imgURL(id, maxStateById);
+                    overlay.src = overlayURL(id, maxStateById);
+                    const container = img.closest('.container');
+                    if (container) {
+                        updateStateButtonHighlight(container);
+                    }
                 }
             });
             updateUrl();
@@ -978,10 +1074,12 @@
         document.getElementById("Identity-reset2").addEventListener("click", () => resetState(2,1001,13000));
         document.getElementById("Identity-reset3").addEventListener("click", () => resetState(3,1001,13000));
         document.getElementById("Identity-reset4").addEventListener("click", () => resetState(4,1001,13000));
+        document.getElementById("Identity-resetMax").addEventListener("click", () => resetStateToMax(1001,13000));
         document.getElementById("E.G.O-reset1").addEventListener("click", () => resetState(1,13001,25000));
         document.getElementById("E.G.O-reset2").addEventListener("click", () => resetState(2,13001,25000));
         document.getElementById("E.G.O-reset3").addEventListener("click", () => resetState(3,13001,25000));
         document.getElementById("E.G.O-reset4").addEventListener("click", () => resetState(4,13001,25000));
+        document.getElementById("E.G.O-resetMax").addEventListener("click", () => resetStateToMax(13001,25000));
 
         for (let X = 1; X <= 24; X++) {  // グループ1〜24
             for (let Y = 0; Y <= 4; Y++) {  // ボタン0〜4
@@ -992,6 +1090,13 @@
                         resetState(Y, 1000 * X + 1, 1000 * (X + 1));
                     });
                 }
+            }
+
+            const maxButton = document.getElementById(`reset${X}-max`);
+            if (maxButton) {
+                maxButton.addEventListener('click', () => {
+                    resetStateToMax(1000 * X + 1, 1000 * (X + 1));
+                });
             }
         }
 
@@ -1153,6 +1258,7 @@
                 targetImg.alt = sourceImg.alt;
                 targetOverlay.src = sourceOverlay.src;
                 targetOverlay.alt = sourceOverlay.alt;
+                updateStateButtonHighlight(targetContainer);
             }
 
             // レベル情報を同期
@@ -1457,7 +1563,7 @@
 
                 const requiredContentWidth = Math.max(imageWidth, maxTextWidth);
                 container.style.minWidth = `${requiredContentWidth}px`;
-                container.style.marginRight = `${buttonWidth + 8}px`;
+                container.style.marginRight = mode === 'button' ? `${buttonWidth + 8}px` : '0px';
             });
         }
 
@@ -1469,6 +1575,7 @@
                 const alt = parseInt(img.alt, 10) || 0;
                 img.src = imgURL(id, alt);
                 overlay.src = overlayURL(id, alt);
+                updateStateButtonHighlight(container);
             });
         }
 
