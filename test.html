@@ -195,8 +195,8 @@
         <div class="grid-line">
             <span class="indent">画像サイズ:</span><div id="imgSizeForm">
                 <input type="radio" name="imgSize" value="size1">小
-                <input type="radio" name="imgSize" value="size2" checked>中
-                <input type="radio" name="imgSize" value="size3">大
+                <input type="radio" name="imgSize" value="size2">中
+                <input type="radio" name="imgSize" value="size3" checked>大
                 <input type="radio" name="imgSize" value="size4">特大<br>
                 <input type="radio" name="imgSize" value="custom">カスタム <input type="number" id="customWidth" disabled>px
             </div>
@@ -254,8 +254,8 @@
     </div>
     <br>
     強化段階の切り替え方法:
-    <input type="radio" name="state-switch-mode" value="image" checked>画像をクリック
-    <input type="radio" name="state-switch-mode" value="button">ボタンをクリック
+    <input type="radio" name="state-switch-mode" value="image">画像をクリック
+    <input type="radio" name="state-switch-mode" value="button" checked>ボタンをクリック
     <input type="radio" name="state-switch-mode" value="lock">切り替えをロック<br>
         
     <br>
@@ -739,6 +739,25 @@
         urlParams = new URLSearchParams(searchString);
         const imgParam = urlParams.get("img");
         const lvParam = urlParams.get("lv");
+
+        function setInitialUiByImgParam(hasImgParam) {
+            const defaultImgSize = hasImgParam ? 'size2' : 'size3';
+            const defaultStateSwitchMode = hasImgParam ? 'lock' : 'button';
+
+            const imgSizeRadio = document.querySelector(`input[name="imgSize"][value="${defaultImgSize}"]`);
+            if (imgSizeRadio) {
+                imgSizeRadio.checked = true;
+            }
+            applyCustomSize(defaultImgSize === 'size3' ? 120 : 80);
+
+            const stateSwitchModeRadio = document.querySelector(`input[name="state-switch-mode"][value="${defaultStateSwitchMode}"]`);
+            if (stateSwitchModeRadio) {
+                stateSwitchModeRadio.checked = true;
+            }
+        }
+
+        setInitialUiByImgParam(Boolean(imgParam));
+
         if(imgParam){
             const { codingDiffId, encodedImgData } = parseImgParam(imgParam);
             const decompressedImg = decompressImgData(encodedImgData, codingDiffId);
