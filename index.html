@@ -224,7 +224,7 @@
             <input type="checkbox" id="show-season"> シーズン区分を表示する
         </div><br>
     
-    <details>
+    <details id="shared-side-options">
         <summary>共有された側に向けてのオプション</summary>
         <br>
         <input type="checkbox" id="none-alt0">未所持の人格、E.G.Oを表示しない
@@ -753,6 +753,7 @@
         function setInitialUiByImgParam(hasImgParam) {
             const defaultImgSize = hasImgParam ? 'size2' : 'size3';
             const defaultStateSwitchMode = hasImgParam ? 'lock' : 'button';
+            const sharedSideOptionsDetails = document.getElementById('shared-side-options');
 
             const imgSizeRadio = document.querySelector(`input[name="imgSize"][value="${defaultImgSize}"]`);
             if (imgSizeRadio) {
@@ -763,6 +764,10 @@
             const stateSwitchModeRadio = document.querySelector(`input[name="state-switch-mode"][value="${defaultStateSwitchMode}"]`);
             if (stateSwitchModeRadio) {
                 stateSwitchModeRadio.checked = true;
+            }
+
+            if (sharedSideOptionsDetails) {
+                sharedSideOptionsDetails.open = hasImgParam;
             }
         }
 
