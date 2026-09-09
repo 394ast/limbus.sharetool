@@ -433,7 +433,7 @@
                 overlay.dataset.id = startId + i;
                 overlay.classList.add('overlay');
 
-                const altValue = Math.min(defaultState, itemMaxState);
+                const altValue = Math.max(defaultState, itemMaxState ?? 0);
                 syncAlt(img, overlay, altValue);
 
                 img.src = imgURL(img.dataset.id, altValue);
