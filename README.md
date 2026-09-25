@@ -5,7 +5,7 @@
 
 //新規人格E.G.O実装時の手引き
 //5種のimageStateはもう使わない
-//namelist.jsonに記入
+//limbus.searchに記入
 //XnConvertでリサイズ(160x160)兼jpgへ
 //XnConvertでモノクロ化　彩度を下げる　画像調整（明るさ-40）ファイル名の最後に.monoを付ける
 //レベル上限更新時はmaxLvを書き換える
