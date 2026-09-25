@@ -380,11 +380,11 @@
         const maxLv = 65; //レベル上限解放時はここを書き換える
         const changecodingDIffID = 0; // 下位idが36を超えるとき手動で1に変更する
         const lvCheckbox = document.getElementById("enableLv");
-        const namelistSources = [
-            "https://raw.githubusercontent.com/394ast/limbus.tiermaker/maim/namelist.json",
-            "https://raw.githubusercontent.com/394ast/limbus.tiermaker/main/namelist.json",
+        const csvSources = [
+            "https://raw.githubusercontent.com/394ast/limbus.search/main/Limbus%20data%20-%20Identity.csv",
+            "https://raw.githubusercontent.com/394ast/limbus.search/main/Limbus%20data%20-%20EGO.csv",
         ];
-        const namelistData = await loadNamelist(namelistSources);
+        const namelistData = await loadLimbusData(csvSources);
         preloadImageAssets(namelistData);
         const idMetadataMap = new Map(namelistData.map((item) => [item.id, item]));
         const groupsData = Array.from({ length: 24 }, (_, index) => {
@@ -520,26 +520,84 @@
             }
         });
 
-        async function loadNamelist(sources) {
-            for (const source of sources) {
-                try {
-                    const response = await fetch(source);
-                    if (!response.ok) {
-                        continue;
-                    }
+        async function loadLimbusData(sources) {
+            try {
+                const responses = await Promise.all(sources.map(source => fetch(source)));
 
-                    const json = await response.json();
-                    const normalized = normalizeNamelist(json);
-                    if (normalized.length > 0) {
-                        return normalized;
+                if (responses.some(response => !response.ok)) {
+                    throw new Error("CSVの取得に失敗しました。");
+                }
+
+                const csvTexts = await Promise.all(responses.map(response => response.text()));
+                const csvData = csvTexts.flatMap(text => parseCsv(text));
+                const normalized = normalizeNamelist(csvData);
+
+                if (normalized.length > 0) {
+                    return normalized;
+                }
+
+                throw new Error("CSVに有効なデータがありません。");
+            } catch (error) {
+                console.error("Limbus data CSV の取得に失敗しました。", error);
+                return [];
+            }
+        }
+
+        function parseCsv(text) {
+            const rows = [];
+            let row = [];
+            let field = "";
+            let inQuotes = false;
+
+            for (let i = 0; i < text.length; i++) {
+                const char = text[i];
+                const nextChar = text[i + 1];
+
+                if (char === '"') {
+                    if (inQuotes && nextChar === '"') {
+                        field += '"';
+                        i++;
+                    } else {
+                        inQuotes = !inQuotes;
                     }
-                } catch (error) {
-                    console.warn(`Failed to load namelist from ${source}`, error);
+                } else if (char === ',' && !inQuotes) {
+                    row.push(field);
+                    field = "";
+                } else if ((char === '\n' || char === '\r') && !inQuotes) {
+                    if (char === '\r' && nextChar === '\n') {
+                        i++;
+                    }
+                    row.push(field);
+                    field = "";
+
+                    if (row.some(value => value !== "")) {
+                        rows.push(row);
+                    }
+                    row = [];
+                } else {
+                    field += char;
                 }
             }
 
-            console.error("namelist.json の取得に失敗しました。");
-            return [];
+            if (field !== "" || row.length > 0) {
+                row.push(field);
+                if (row.some(value => value !== "")) {
+                    rows.push(row);
+                }
+            }
+
+            if (rows.length === 0) {
+                return [];
+            }
+
+            const headers = rows[0];
+            return rows.slice(1).map(values => {
+                const item = {};
+                headers.forEach((header, index) => {
+                    item[header] = values[index] ?? "";
+                });
+                return item;
+            });
         }
 
         function preloadImageAssets(namelistData) {
